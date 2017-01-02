@@ -1,0 +1,21 @@
+{
+  "name": "DrHouse",
+  "version": "0.0.1",
+  "description": "Mobile APP",
+  "main": "js/index.js",
+  "dependencies": {
+    "react": "^15.1.0",
+    "react-router" : "^2.5.2",
+    "react-tap-event-plugin": "^1.0.0",
+    "react-dom": "^15.1.0",
+    "material-ui": "^0.15.1",
+    "babelify": "^7.3.0",
+    "babel-preset-react": "^6.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "browserify js/index.js -o bundle.js -t [ babelify --presets [ react ] ]"
+  },
+  "author": "",
+  "license": ""
+}

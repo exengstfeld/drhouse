@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.example.hello" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Boletero Portatil</name>
+    <description>
+        Una aplicacion que permite escanear codigos de barras de los comprobantes emitidos por ViaTicket a fines de saber exactamente quien ingresa a la sala y que ubicaciones ocupan
+    </description>
+    <author email="eengstfeld@msa.com.ar" href="https://viaticket.com.ar">
+        Eric Engstfeld
+    </author>
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
+    <engine name="android" spec="~5.1.1" />
+    <engine name="ios" spec="~4.1.1" />
+</widget>
