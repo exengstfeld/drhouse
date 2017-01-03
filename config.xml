@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.example.hello" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Boletero Portatil</name>
+    <name>Dr House</name>
     <description>
-        Una aplicacion que permite escanear codigos de barras de los comprobantes emitidos por ViaTicket a fines de saber exactamente quien ingresa a la sala y que ubicaciones ocupan
+        Una aplicacion que permite escanear codigos QR de los pacientes con internacion domiciliaria a fines de marcar entrada / salida y realizar seguimientos
     </description>
-    <author email="eengstfeld@msa.com.ar" href="https://viaticket.com.ar">
+    <author email="exengstfeld@gmail.com" href="https://softwerkla.com">
         Eric Engstfeld
     </author>
     <plugin name="cordova-plugin-whitelist" spec="1" />

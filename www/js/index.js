@@ -5,95 +5,146 @@ const Route = require('react-router').Route
 const Link = require('react-router').Link
 const browserHistory = require('react-router').hashHistory
 
-const Header = React.createClass({
-    render: function () {
+function isNotLoggedIn(){
+    return (sessionStorage.loggedIn == "") || (sessionStorage.loggedIn == undefined)
+}
+
+function closeActiveSession(){
+    sessionStorage.loggedIn = "";
+}
+
+class SecuredView extends React.Component {
+
+    componentDidMount() {
+        this.checkLoggedIn();
+    }
+
+    checkLoggedIn(){
+        if (isNotLoggedIn()){
+            browserHistory.push("/")
+        }
+    }
+}
+
+class Header extends React.Component {
+
+    render() {
         return (
             <header className="bar bar-nav">
-                <h1 className="title">{this.props.text}</h1>
-                <Link to='/settings'>
-                      <span className="media-object pull-right icon icon-gear"></span>
-                </Link>
+                {this.props.back==="true" &&
+                    <span onClick={browserHistory.goBack} className="icon icon-left-nav pull-left"></span>
+                }
+                <h1 className="title"><img style={{width: "110px", height: "40px"}} className="media-object" src={"img/logo.jpg"} /></h1>
             </header>
         )
     }
-})
+}
 
-const Footer = React.createClass({
-    render: function () {
+class SubHeader extends React.Component {
+
+    render() {
         return (
-            <div className="bar bar-standard bar-footer">
-                <img style={{width: "120px", height: "40px"}} className="media-object" src={"img/logo.png"} />
-                <span class="icon icon-person pull-right"></span>
+            <div className="bar bar-standard bar-header-secondary">
+                <h2 className="title">{this.props.text}</h2>
             </div>
         )
     }
-})
+}
 
-const Home = React.createClass({
-    render: function(){
+class Footer extends React.Component {
+
+    render() {
+        return (
+            <div className="bar bar-standard bar-footer">
+                <nav className="bar bar-tab">
+                    <Link className="tab-item" to='/settings'>
+                        <span className="icon icon-gear"></span>
+                        <span className="tab-label">Opciones</span>
+                    </Link>
+                    { !isNotLoggedIn() &&
+                        <Link onClick={closeActiveSession} className="tab-item" to="/">
+                            <span className="icon icon-person"></span>
+                            <span className="tab-label">{sessionStorage.loggedIn}</span>
+                        </Link>
+                    }
+                </nav>
+            </div>
+        )
+    }
+}
+
+class Home extends SecuredView {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            shows: [
+                {
+                    "nombre": "Nick Cave & The Bad Seeds",
+                    "id": "1001",
+                    "inicio": "23:00",
+                    "sala": "Principal"
+                }
+            ]
+        };
+    }
+
+    render(){
         return(
             <div>
-                <Header text="FUNCIONES PROXIMAS" back="true"/>
+                <Header back="true"/>
+                <SubHeader text="Próximas Funciones" />
                 <div className="content">
                     <ul className="table-view">
-                      <li className="table-view-cell media">
-                          <Link className="navigate-right" to='/workspace'>
-                                  <img className="media-object pull-left" src={"http://placehold.it/42x42"} />
-                                  <div className="media-body">
-                                    Soda Stereo
-                                    <p>Sala: Principal - Inicio: 23:00hs</p>
-                                  </div>
-                          </Link>
-                      </li>
-                      <li className="table-view-cell media">
-                          <Link className="navigate-right" to='/workspace'>
-                                  <img className="media-object pull-left" src={"http://placehold.it/42x42"}/>
-                                  <div className="media-body">
-                                     INDIOS
-                                     <p>Sala: Nahuel Huapi - Inicio: 17:00hs</p>
-                                  </div>
-                          </Link>
-                      </li>
-                      <li className="table-view-cell media">
-                          <Link className="navigate-right" to='/workspace'>
-                                  <img className="media-object pull-left" src={"http://placehold.it/42x42"}/>
-                                  <div className="media-body">
-                                     Yayo
-                                     <p>Sala: Principal - Inicio: 20:30hs</p>
-                                  </div>
-                          </Link>
-                      </li>
+                    {
+                        this.state.shows.map(function(show){
+                          return (
+                              <li className="table-view-cell media">
+                                  <Link className="navigate-right" to={'/workspace/'+show.id}>
+                                          <img className="media-object pull-left" src={"http://placehold.it/42x42"} />
+                                          <div className="media-body">
+                                            {show.nombre}
+                                            <p>Sala: {show.sala} - Inicio: {show.inicio}hs</p>
+                                          </div>
+                                  </Link>
+                              </li>
+                          )
+                        })
+                    }
                     </ul>
                 </div>
                 <Footer />
             </div>
            )
     }
-})
+}
 
-const Workspace = React.createClass({
-    render: function(){
+class Workspace extends SecuredView {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: ""
+        };
+    }
+
+    componentDidMount(){
+        this.setState({id: this.props.params.id});
+    }
+
+    render(){
         return(
             <div>
-                <Header text="INDIOS" back="true"/>
+                <Header back="true"/>
+                <SubHeader text={this.state.id} />
                 <div className="content">
                     <ul className="table-view">
                       <li className="table-view-cell media">
-                          <Link className="navigate-right" to='/scan'>
+                          <Link className="navigate-right" to={'/scan/' + this.state.id}>
                                   <span className="media-object pull-left icon icon-pages"></span>
                                   <div className="media-body">
                                      Leer comprobante
-                                     <p>Basado en el código de barras del comprobante identifica la entrada</p>
-                                  </div>
-                          </Link>
-                      </li>
-                      <li className="table-view-cell media">
-                          <Link className="navigate-right" to='/synchro'>
-                                  <span className="media-object pull-left icon icon-refresh"></span>
-                                  <div className="media-body">
-                                     Sincronizar con el servidor
-                                     <p>En modo sin conexión, envía los datos escaneados al servidor</p>
-                                     <span className="badge">33</span>
+                                     <p>Basado en el código QR ticket electrónico identifica la entrada</p>
                                   </div>
                           </Link>
                       </li>
@@ -112,7 +163,7 @@ const Workspace = React.createClass({
             </div>
            )
     }
-})
+}
 
 
 class Login extends React.Component {
@@ -125,114 +176,121 @@ class Login extends React.Component {
             password: ""
         };
     }
+    
+    componentDidMount(){
+        closeActiveSession();
+    }
+
     handleUsernameChange(event) {
        this.setState({username: event.target.value});
     }
+
     handlePasswordChange(event) {
        this.setState({password: event.target.value});
     }
+
     handleSubmit(event) {
         event.preventDefault();
-        // this.setState({feedback: "Credenciales inválidas"});
-        browserHistory.push('/home')
+        // this.setState({feedback: "Credenciales inválidas"}); 
+        sessionStorage.loggedIn = this.state.username;
+        browserHistory.push('/home');
     }
+
     render(){
         return ( 
             <div>
-                <Header text="VIATICKET" back="true"/>
-                <div className="content">
-                    <form className="LoginForm" onSubmit={this.handleSubmit.bind(this)}>
+                <Header back="false"/>
+                <div className="bar bar-standard bar-header-secondary">
+                    <form className="input-group" onSubmit={this.handleSubmit.bind(this)}>
                         <div className="alert">
                             {this.state.feedback}
                         </div>
-                        <input type="text" name="username" onChange={this.handleUsernameChange.bind(this)} placeholder="example@gmail.com" />
-                        <input type="password" name="password" onChange={this.handlePasswordChange.bind(this)} placeholder="mypassword" />
-                        <input type="submit" className="btn btn-positive btn-block" value="Ingresar" />
+                        <div className="input-row">
+                            <label>Usuario</label>
+                            <input type="text" name="username" onChange={this.handleUsernameChange.bind(this)} placeholder="example@gmail.com" />
+                        </div>
+                        <div className="input-row">
+                            <label>Contraseña</label>
+                            <input type="password" name="password" onChange={this.handlePasswordChange.bind(this)} placeholder="mypassword" />
+                        </div>
+                        <div>
+                            <button type="submit" className="btn btn-primary btn-block">Ingresar</button>
+                        </div>
                     </form>
                 </div>
-                <Footer />
             </div>
         )
     }
 }
 
-const Settings = React.createClass({
+class Settings extends SecuredView {
+
     render(){
         return ( 
             <div>
-                <Header text="PREFERENCIAS" back="true"/>
+                <Header back="true"/>
+                <SubHeader text="Opciones" />
                 <div className="content">
                     <ul className="table-view">
                       <li className="table-view-cell">
-                        Modo sin conexión
-                        <div className="toggle active">
-                          <div className="toggle-handle"></div>
-                        </div>
                       </li>
                     </ul>
                 </div>
             </div>
         )
     }
-})
+}
 
-const Synchro = React.createClass({
-    render(){
-        return ( 
-            <div>
-                <Header text="SINCRONIZAR" back="true"/>
-                <div className="content">
-                    <ul className="table-view">
-                      <li className="table-view-cell">
-                        Usted tiene 33 registros para enviar al servidor <button className="btn">Sicronizar</button>
-                      </li>
-                    </ul>
-                </div>
-                <Footer />
-            </div>
-        )
+class ScanTicket extends SecuredView {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            result: "",
+            id: ""
+        };
     }
-})
-
-const ScanTicket = React.createClass({
 
     componentDidMount() {
+        this.setState({id: this.props.params.id});
         this.handleScan()
-    },
+    }
 
     handleScan(){
           cordova.plugins.barcodeScanner.scan(
               function (result) {
-                  this.props.result = result.text;
+                  this.setState({result: result.text});
               }, 
               function (error) {
-                  this.props.result = error;
+                  this.setState({result: error});
               },
               {
                   "preferFrontCamera" : false, // iOS and Android
                   "showFlipCameraButton" : true, // iOS and Android
-                  "prompt" : "Lleve el recuadro hacia el código de barras del comprobante de compra", // supported on Android only
+                  "prompt" : "Lleve el recuadro hacia el código QR del ticket electrónico", // supported on Android only
                   "formats" : "QR_CODE,PDF_417,CODE_128", // default: all but PDF_417 and RSS_EXPANDED
                   "orientation" : "landscape" // Android only (portrait|landscape), default unset so it rotates with the device
               }
           );
-    },
+    }
 
     render(){
         return ( 
             <div>
-                <Header text="Scanear Ticket" back="true"/>
+                <Header back="true"/>
+                <SubHeader text={this.state.id} />
                 <div className="content">
-                    <p>{this.props.result}</p>
+                    <h1>{this.state.result}</h1>
                 </div>
             </div>
         )
     }
-})
+}
 
 const NoMatch = React.createClass({
+
     render(){
-        return <div>Lo sentimos pero esta vista no esta definida. <Link to='/' >Volver al inicio</Link></div>    
+        return <h1>Lo sentimos pero esta vista no esta definida. <Link to='/home' >Volver al inicio</Link></h1>    
     }
 })
 
@@ -240,10 +298,9 @@ ReactDOM.render((
       <Router history={browserHistory}>
         <Route path='/' component={Login}/>
         <Route path='/home' component={Home}/>
-        <Route path='/workspace' component={Workspace}/>
-        <Route path='/scan' component={ScanTicket}/>
+        <Route path='/workspace/:id' component={Workspace}/>
+        <Route path='/scan/:id' component={ScanTicket}/>
         <Route path='/settings' component={Settings}/>
-        <Route path='/synchro' component={Synchro}/>
         <Route path='/*' component={NoMatch}/>
       </Router>
 ), document.getElementById("root"))
