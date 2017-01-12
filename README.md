@@ -44,13 +44,13 @@ Finalmente en otra consola:
 
 ```bash
 # Para el platform browser
-cordoba build browser
+cordova build browser
 
 # Para correrla en brwoser
-cordoba run browser
+cordova run browser
 
 # Para correrla en dispositivo
-cordoba run android --device
+cordova run android --device
 ```
 Tener en cuenta que apra correrla en un dispositivo físico
 es necesario tenerlo al mismo enchufado y haberle activado
