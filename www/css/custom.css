@@ -1,9 +1,6 @@
-body {
-    background-image: url(../img/background.jpg);
-    height:100%;
-    width:100%;
-    background-size:cover;
-    background-repeat:no-repeat;
-    background-position: center center;
-    background-attachment:fixed;
+.app-bar-text {
+    color: #ffffff !important;
+    @import url('https://fonts.googleapis.com/css?family=News+Cycle');
+    font-family: 'News Cycle', sans-serif;
+    font-size: xx-large;
 }

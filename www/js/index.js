@@ -2,22 +2,87 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const Router = require('react-router').Router
 const Route = require('react-router').Route
+const IndexRoute = require('react-router').IndexRoute
 const Link = require('react-router').Link
 const browserHistory = require('react-router').hashHistory
+
+const NavBar = require('react-ratchet').NavBar
+const Title = require('react-ratchet').Title
+const NavButton = require('react-ratchet').NavButton
+const TableView = require('react-ratchet').TableView
+const TableViewCell = require('react-ratchet').TableViewCell
+const Button = require('react-ratchet').Button
+const Badge = require('react-ratchet').Badge
+const Icon = require('react-ratchet').Icon
+const Toggle = require('react-ratchet').Toggle
+
+const MuiThemeProvider = require('material-ui/styles').MuiThemeProvider
+const getMuiTheme = require('material-ui/styles').getMuiTheme
+
+const RaisedButton = require('material-ui').RaisedButton
+const TextField = require('material-ui').TextField
+const Dialog = require('material-ui').Dialog
+const FlatButton = require('material-ui').FlatButton
+const AppBar = require('material-ui').AppBar
+const Paper = require('material-ui').Paper
+const Divider = require('material-ui').Divider
+const Drawer = require('material-ui').Drawer
+
+const IconButton = require('material-ui').IconButton
+const IconMenu = require('material-ui').IconMenu
+const MenuItem = require('material-ui').MenuItem
+const {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
+const {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} = require('material-ui/Table')
+const SvgIcon = require('material-ui').SvgIcon
+const {amber500, red700} = require('material-ui/styles/colors');
+const {cyan700, grey600, pinkA100, pinkA200, pinkA400, fullWhite} = require('material-ui/styles/colors')
+const {fade} = require('material-ui/utils/colorManipulator')
+const spacing = require('material-ui/styles/spacing')
+const injectTapEventPlugin = require('react-tap-event-plugin')
+injectTapEventPlugin();
 
 //const api_base_url = "http://192.168.50.14:8001/api/v1.3";
 //const api_base_url = "http://gt-api-staging.msa:8001/api/v1.3";
 const api_base_url = "http://caba2.msa.com.ar:18001/api/v1.3";
 
+const input_style = {
+  marginLeft: 13,
+};
+
+const form_style = {
+  padding: 16,
+};
+
+const logo_style= {
+  heigh: "40px",
+  width: "40px"
+};
+
+const darkBaseTheme = getMuiTheme({
+      spacing: spacing,
+      fontFamily: 'Roboto, sans-serif',
+      palette: {
+        primary1Color: cyan700,
+        primary2Color: cyan700,
+        primary3Color: grey600,
+        accent1Color: pinkA200,
+        accent2Color: pinkA400,
+        accent3Color: pinkA100,
+        textColor: fullWhite,
+        secondaryTextColor: fade(fullWhite, 0.7),
+        alternateTextColor: '#303030',
+        canvasColor: '#303030',
+        borderColor: fade(fullWhite, 0.3),
+        disabledColor: fade(fullWhite, 0.3),
+        pickerHeaderColor: fade(fullWhite, 0.12),
+        clockCircleColor: fade(fullWhite, 0.12),
+    },
+});
+
 function isNotLoggedIn(){
     return (sessionStorage.loggedIn == "") || (sessionStorage.loggedIn == undefined)
-}
+} 
 
-function closeActiveSession(){
-    sessionStorage.loggedIn = "";
-    sessionStorage.shows = "";
-    sessionStorage.user = "";
-}
 
 function locateFunction(id_funcion){
     funciones = JSON.parse(sessionStorage.shows);
@@ -29,72 +94,67 @@ function locateFunction(id_funcion){
     throw Error("No se ha localizado la funcion "+ id_funcion);
 }
 
-class SecuredView extends React.Component {
-
-    componentDidMount() {
-        this.checkLoggedIn();
-    }
-
-    checkLoggedIn(){
-        if (isNotLoggedIn()){
-            browserHistory.push("/")
-        }
-    }
+function Notification(props){
+    return (
+      <Dialog
+       title="Atención"
+       actions={[
+           <FlatButton
+             label="Volver"
+             primary={true}
+             onTouchTap={props.onRequestClose}
+           />
+       ]}
+       {...props}
+       modal={false}
+      >
+       {props.children}
+      </Dialog>
+   )
 }
 
-class Header extends React.Component {
-
-    render() {
-        return (
-            <header className="bar bar-nav">
-                {this.props.back==="true" &&
-                    <span onClick={browserHistory.goBack} className="icon icon-left-nav pull-left"></span>
-                }
-                <h1 className="title"><img style={{width: "110px", height: "40px"}} className="media-object" src={"img/logo.jpg"} /></h1>
-                { !isNotLoggedIn() && (
-                    <Link onClick={closeActiveSession} className="tab-item" to="/">
-                        <span className="icon icon-person-nav pull-right">{sessionStorage.loggedIn}</span>
-                    </Link>
-                )}
-            </header>
-        )
-    }
+function ShowCard(props){
+    return (
+        <Card>
+          <CardHeader
+            title={props.show.nombre}
+            subtitle= {props.show.lugar}
+            actAsExpander={true}
+            showExpandableButton={true}
+          />
+          <CardText expandable={true}>
+              Será en {props.show.lugar_domicilio} en la sala {props.show.sala} el día {props.show.fecha} a las {props.show.hora}hs. Se puede marcar entrada hasta el {props.show.fecha_baja} a las {props.show.hora_baja}hs
+          </CardText>
+          <CardActions>
+            <FlatButton href={"index.html#/scan/"+props.show.id} label="Leer Ticket" />
+          </CardActions>
+        </Card>
+    )
 }
 
-class SubHeader extends React.Component {
-
-    render() {
-        return (
-            <div className="bar bar-standard bar-header-secondary">
-                <h2 className="title">{this.props.text}</h2>
-            </div>
-        )
-    }
+function VTIcon(props){
+    return (
+        <img src={"img/Viaticket_2017_2.png"} />
+    )
 }
 
-class Footer extends React.Component {
-
-    render() {
-        return (
-            <div className="bar bar-standard bar-footer">
-                { !isNotLoggedIn() && (
-                    <nav className="bar bar-tab">
-                        <Link onClick={closeActiveSession} className="tab-item" to="/">
-                            <span className="tab-label">Cerrar Sesión</span>
-                        </Link>
-                        <span className="tab-item">
-                            <span className="icon icon-person"></span>
-                            <span className="tab-label">{sessionStorage.loggedIn}</span>
-                        </span>
-                    </nav>
-                )}
-            </div>
-        )
-    }
+function MoreIcon(props){
+    return (
+        <SvgIcon>
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </SvgIcon>
+    )
 }
 
-class Home extends SecuredView {
+function CloseIcon(props){
+    return (
+        <SvgIcon>
+            <path d="M15 8.25H5.87l4.19-4.19L9 3 3 9l6 6 1.06-1.06-4.19-4.19H15v-1.5z"/>
+        </SvgIcon>
+    )
+}
 
+class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -103,126 +163,56 @@ class Home extends SecuredView {
     }
 
     componentDidMount(){
-        console.log(sessionStorage.shows);
         if (sessionStorage.shows.length > 0){
             this.setState({shows: JSON.parse(sessionStorage.shows)});
         } else {
-            this.loadFunctions();
+            this.loadFunctions()
         }
     }
 
-    loadFunctions(){
-        fetch(api_base_url + '/mobile/funciones', {
-                method: 'GET'
-        }).then(function(response) {
-            return response.json();
-        }).then(function(response) {
+    loadFunctions(){ 
+        fetch(api_base_url + '/mobile/funciones/'+sessionStorage.loggedIn).then(response => response.json()).then(function(response){
             if (response.success){
                 this.setState({shows: response.data});
                 sessionStorage.shows = JSON.stringify(response.data);
             } else {
                this.setState({feedback: response.data});
             }
-        }.bind(this));
+        }.bind(this))
     }
-
+    
     render(){
         return(
             <div>
-                <Header back="true"/>
-                <div className="bar bar-standard bar-header-secondary">
-                    <h2 className="title">Funciones</h2>
-                    <span onClick={this.loadFunctions.bind(this)} className="icon icon-refresh pull-right"></span>
-                </div>
-                <div className="content">
-                    <ul className="table-view">
+                <Paper style={form_style} zDepth={2}>
                     {
-                        this.state.shows.map(function(show, i){
-                          return (
-                              <li key={i} value={show.id} className="table-view-cell media">
-                                  <Link className="navigate-right" to={'workspace/'+show.id}>
-                                          <img className="media-object pull-left" src={"http://placehold.it/42x42"} />
-                                          <div className="media-body">
-                                            {show.nombre}
-                                            <p>Sala: {show.sala} - Inicio: {show.fecha} - {show.hora}</p>
-                                            <p>Hasta: {show.fecha_baja} - {show.hora_baja}hs</p>
-                                          </div>
-                                  </Link>
-                              </li>
-                          )
-                        })
-                    }
-                    </ul>
-                </div>
-            </div>
-           )
-    }
-}
-
-class Workspace extends SecuredView {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            feedback: "",
-            funcion: {
-                "id": "",
-                "nombre": "",
-                "sala": "",
-                "fecha_baja": "",
-                "hora_baja": "",
-                "hora": "",
-                "fecha": ""
-            }
-        };
-    }
-
-    componentDidMount(){
-        this.setState({funcion: locateFunction(this.props.params.id)});
-    }
-
-    render(){
-        return(
-            <div>
-                <Header back="true"/>
-                <SubHeader text={this.state.funcion.nombre} />
-                <div className="content">
-                    <div className="card">
-                        <ul className="table-view">
-                          <li className="table-view-cell media">
-                              <Link className="navigate-right" to={'scan/' + this.state.funcion.id}>
-                                      <span className="media-object pull-left icon icon-plus"></span>
-                                      <div className="media-body">
-                                         Leer comprobante
-                                         <p>Basado en el código QR ticket electrónico identifica la entrada</p>
-                                      </div>
-                              </Link>
-                          </li>
-                          <li className="table-view-cell media">
-                            <div className="media-body">
-                              <p>Sala: {this.state.funcion.sala}</p>
-                              <p>Inicio: {this.state.funcion.fecha} - {this.state.funcion.hora}</p>
-                              <p>Hasta: {this.state.funcion.fecha_baja} - {this.state.funcion.hora_baja}hs</p>
+                        this.state.shows.map((v, i) => (
+                            <div key={i}>
+                                <ShowCard show={v} />
+                                <br/>
                             </div>
-                          </li>
-                          <li className="table-view-cell">
-                                <p>Aqui va el plano</p>
-                          </li>
-                        </ul>
-                    </div>
-                </div>
+                          )
+                        )
+                    }
+                </Paper>
             </div>
-           )
+       )
     }
 }
-
 
 class Login extends React.Component {
 
     constructor(props) {
         super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.processLoginError= this.processLoginError.bind(this);
+        this.processLoginResponse = this.processLoginResponse.bind(this);
         this.state = {
             feedback: "",
+            error: false,
             username: "",
             password: ""
         };
@@ -240,88 +230,72 @@ class Login extends React.Component {
        this.setState({password: event.target.value});
     }
 
-    handleSubmit(event) {
-        event.preventDefault();
+    processLoginResponse(response) {
+        if (response.success){
+            sessionStorage.loggedIn = this.state.username;
+            sessionStorage.user = JSON.stringify(response.data);
+            browserHistory.push('/home');
+        } else {
+           this.setState({feedback: response.data, error: true});
+        }
+    }
+
+    processLoginError(error) {
+        this.setState({feedback: error, error: true})
+    }
+    handleClose(error) {
+        this.setState({feedback: "", error: false, username: "", password: ""})
+    }
+    
+    handleSubmit() {
         fetch(api_base_url + '/mobile/usuario/login', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({"id_usuario": this.state.username, "password": this.state.password})
-        }).then(function(response) {
-            if (response && response.status == 200) {
-                return response.json();
+        }).then((response) => {
+            if (response.status == 200) {
+                return response.json()
             }
-            throw Error(response.statusText);
-        }.bind(this)).then(function(response) {
-            if (response.success){
-                sessionStorage.loggedIn = this.state.username;
-                sessionStorage.user = JSON.stringify(response.data);
-                browserHistory.push('/home');
-            } else {
-               this.setState({feedback: response.data});
-            }
-        }.bind(this)).catch(function(error) {
-           this.setState({feedback: "Error de conexion, por favor, intente más tarde: "+ error});
-        }.bind(this));     
+            throw Error("Error de conexion, por favor, intente más tarde: "+ response.statusText)
+        }).then(
+            this.processLoginResponse 
+        ).catch(
+            this.processLoginError
+        )     
     }
 
     render(){
         return ( 
             <div>
-                <Header back="false"/>
-                <div className="bar bar-standard bar-header-secondary">
-                    { this.state.feedback != "" && (  
-                    <div className="card">
-                        <ul className="table-view">
-                            <li className="table-view-cell">
-                                <p><span className="badge badge-negative badge-inverted">{this.state.feedback}</span></p>
-                            </li>
-                        </ul>
-                    </div>
-                    )}
-                    <form className="input-group" onSubmit={this.handleSubmit.bind(this)}>
-                        <div className="input-row">
-                            <label>Usuario</label>
-                            <input type="text" name="username" onChange={this.handleUsernameChange.bind(this)} placeholder="example@gmail.com" />
-                        </div>
-                        <div className="input-row">
-                            <label>Contraseña</label>
-                            <input type="password" name="password" onChange={this.handlePasswordChange.bind(this)} placeholder="mypassword" />
-                        </div>
-                        <div>
-                            <button type="submit" className="btn btn-primary btn-block">Ingresar</button>
-                        </div>
-                    </form>
-                </div>
+                 <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
+                 <Card>
+                   <CardMedia>
+                     <img src="img/Viaticket_2017_2.png" />
+                   </CardMedia>
+                   <CardTitle title="Login" subtitle="Acceda con sus credenciales habituales de boletería" />
+                   <CardText>
+                     <TextField style={input_style} underlineShow={false} floatingLabelText="Username" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
+                     <Divider />
+                     <TextField style={input_style} underlineShow={false} floatingLabelText="Password" id="password-field" value={this.state.password} type="password" onChange={this.handlePasswordChange} />
+                   </CardText>
+                   <CardActions>
+                     <RaisedButton label="Login" onTouchTap={this.handleSubmit} fullWidth={true}/>
+                   </CardActions>
+                 </Card>
             </div>
         )
     }
 }
 
-
-class Settings extends SecuredView {
-
-    render(){
-        return ( 
-            <div>
-                <Header back="true"/>
-                <SubHeader text="Opciones" />
-                <div className="content">
-                    <ul className="table-view">
-                      <li className="table-view-cell">
-                      </li>
-                    </ul>
-                </div>
-            </div>
-        )
-    }
-}
-
-
-
-class ScanTicket extends SecuredView {
+class ScanTicket extends React.Component {
 
     constructor(props) {
         super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.processFetchError = this.processFetchError.bind(this);
+        this.processMarcarResponse = this.processMarcarResponse.bind(this);
+        this.processValidationResponse = this.processValidationResponse.bind(this);
         this.state = {
             code: "",
             id_funcion: "",
@@ -334,6 +308,7 @@ class ScanTicket extends SecuredView {
                 "apellido": "",
                 "tickets": []
             },
+            all_marked: false,
             feedback: "",
             eticket_validated: false,
             eticket_error: false
@@ -342,7 +317,18 @@ class ScanTicket extends SecuredView {
 
     componentDidMount() {
         this.setState({id_funcion: this.props.params.id});
-        this.handleScan();
+        cordova.plugins.barcodeScanner.scan(
+            ((result) => this.setState({code: result.text})),
+            ((error) => this.setState({eticket_error: true, feedback: error})),
+            {
+                "preferFrontCamera" : false, // iOS and Android
+                "showFlipCameraButton" : true, // iOS and Android
+                "prompt" : "Lleve el recuadro hacia el código QR del ticket electrónico", // supported on Android only
+                "formats" : "QR_CODE", // default: all but PDF_417 and RSS_EXPANDED
+                "orientation" : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+                "resultDisplayDuration": 0
+            }
+        );
     }
 
     componentDidUpdate(){
@@ -356,118 +342,99 @@ class ScanTicket extends SecuredView {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({"hash": this.state.code, "id_funcion": this.state.id_funcion})
-        }).then(function(response) {
-            if (response && response.status == 200) {
+        }).then((response) => {
+            if (response.status == 200) {
                 return response.json();
             }
-            throw Error(response.statusText);
-        }.bind(this)).then(function(response) {
-            console.log(response.data);
-            this.setState({eticket_validated: true});
-            if (response.success){
-               this.setState({eticket: response.data});
-            } else {
-               this.setState({feedback: response.data, eticket_error: true});
-            }
-        }.bind(this)).catch(function(error) {
-           this.setState({feedback: "Error de conexion, por favor, intente más tarde: "+ error});
-        }.bind(this));     
+            throw Error("Error de conexion, por favor, intente más tarde: "+ response.statusText);
+        }).then(
+            this.processValidationResponse 
+        ).catch( 
+            this.processFetchError 
+        );     
     }
 
-    handleScan(){
-          cordova.plugins.barcodeScanner.scan(
-              function (result) {
-                  this.setState({code: result.text});
-              }.bind(this), 
-              function (error) {
-                  this.setState({feedback: error});
-              }.bind(this),
-              {
-                  "preferFrontCamera" : false, // iOS and Android
-                  "showFlipCameraButton" : true, // iOS and Android
-                  "prompt" : "Lleve el recuadro hacia el código QR del ticket electrónico", // supported on Android only
-                  "formats" : "QR_CODE", // default: all but PDF_417 and RSS_EXPANDED
-                  "orientation" : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
-                  "resultDisplayDuration": 0
-              }
-          );
+    processValidationResponse(response) {
+        if (response.success){
+            this.setState({eticket_validated: true, eticket: response.data, eticket_error: false, all_marked: response.data.tickets.map((ticket, i) => (ticket.ingreso != "" && ticket.ingreso != undefined)).reduce( (vAnt, vAct, i, vector) => (vAnt && vAct))});
+        } else {
+            this.setState({eticket_validated: true, feedback: response.data, eticket_error: true});
+        }
     }
 
-    handleSubmit(event) {
-        event.preventDefault();
+    processMarcarResponse(response){
+        if (response.success){
+            this.setState({feedback: "Se ha marcado la entrada con exito", eticket_error: true});
+        } else {
+            this.setState({feedback: response.data, eticket_error: true});
+        }
+    }
+
+    processFetchError(error){
+       this.setState({feedback: error, eticket_error: true});
+    }
+
+    handleSubmit() {
         fetch(api_base_url + '/mobile/eticket/marcar', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({"hash": this.state.code, "id_funcion": this.state.id_funcion})
-        }).then(function(response) {
-            if (response && response.status == 200) {
+        }).then((response) => {
+            if (response.status == 200) {
                 return response.json();
             }
-            throw Error(response.statusText);
-        }.bind(this)).then(function(response) {
-            if (response.success){
-                for (i = 0; i < this.state.eticket.tickets.length; i++) {  
-                    this.state.eticket.tickets[i].ingreso = response.data 
-                }
-                this.setState({feedback: "Se ha marcado la entrada con exito", eticket_error: false});
-            } else {
-                this.setState({feedback: response.data, eticket_error: false});
-            }
-        }.bind(this)).catch(function(error) {
-           this.setState({feedback: "Error de conexion, por favor, intente más tarde: "+ error});
-        }.bind(this));     
+            throw Error("Error de conexion, por favor, intente más tarde: "+ response.statusText);
+        }).then( 
+            this.processMarcarResponse 
+        ).catch(
+            this.processFetchError 
+        );     
+    }
+    
+    handleClose(){
+        this.setState({feedback: "", eticket_error: false});
+        browserHistory.push('/home');
     }
 
-
     render(){
-
         return ( 
             <div>
-                <Header back="true"/>
-                <SubHeader text="Marcar Entrada" />
-                <div className="content">
-                    { this.state.eticket_feedback != "" && (  
-                        <p className={"content-padded " + (this.state.eticket_error ? "badge-negative":"badge-positive" ) + " badge-inverted badge"}>
-                           {this.state.feedback}
-                        </p>
-                    )}
-                    {this.state.eticket_validated && !this.state.eticket_error && (
-                        <form className="input-group" onSubmit={this.handleSubmit.bind(this)}>
-                            <div className="input-row">
-                                <label>Operacion</label>
-                                <input readOnly type="text" name="id_operacion" value={this.state.eticket.id_operacion} />
-                            </div>
-                            <div className="input-row">
-                                <label>Importe</label>
-                                <input readOnly type="text" name="importe" value={"$ "+this.state.eticket.importe_total}/>
-                            </div>
-                            <div className="input-row">
-                                <label>Nombre</label>
-                                <input readOnly type="text" name="name" value={this.state.eticket.nombre + " " + this.state.eticket.apellido}/>
-                            </div>
-                            <div className="input-row">
-                                <label>Documento</label>
-                                <input readOnly type="text" name="document" value={this.state.eticket.tipo_documento + " " + this.state.eticket.nro_documento}/>
-                            </div>
-                            <div className="card">
-                                <ul className="table-view">
-                                {
-                                    this.state.eticket.tickets.map(function(ticket, i){
-                                    return (
-                                        <li key={i} value={ticket.nro_ticket} className="table-view-cell table-view-divider">
-                                                <p><span className={"badge " + (ticket.ingreso == "" || ticket.ingreso == undefined ? "badge-positive":"badge-negative") + " badge-inverted"}>Nro Ticket: {ticket.nro_ticket} - Categoría: {ticket.categoria}{(ticket.fila != 0 && " - Fila: "+ ticket.fila )}{(ticket.butaca != 0 && " - Butaca: "+ ticket.butaca )}</span></p>
-                                        </li>
-                                    )
-                                    })
-                                }
-                                </ul>
-                            </div>
-                            <div>
-                                <button type="submit" className="btn btn-primary btn-block">Marcar Acceso</button>
-                            </div>
-                        </form>
-                    )}
-                </div>
+              <Notification open={this.state.eticket_error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
+              <Paper style={form_style} zDepth={2}>
+                  <TextField style={input_style} underlineShow={false} floatingLabelText="Operación" id="operacion-field" value={this.state.eticket.id_operacion} disabled />
+                  <Divider />
+                  <TextField style={input_style} underlineShow={false} floatingLabelText="Importe" id="importe-field" value={this.state.eticket.importe_total} disabled />
+                  <Divider />
+                  <TextField style={input_style} underlineShow={false} floatingLabelText="Nombre" id="nombre-field" value={this.state.eticket.nombre + " " + this.state.eticket.apellido} disabled />
+                  <Divider />
+                  <TextField style={input_style} underlineShow={false} floatingLabelText="Documento" id="documento-field" value={this.state.eticket.tipo_documento + " " + this.state.eticket.nro_documento} disabled />
+                  <Divider />
+                  { this.state.eticket_validated && (
+                      <Table allRowsSelected={this.state.all_marked}>
+                        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                          <TableRow>
+                            <TableHeaderColumn>Nro Ticket</TableHeaderColumn>
+                            <TableHeaderColumn>Categoria</TableHeaderColumn>
+                            <TableHeaderColumn>Fila</TableHeaderColumn>
+                            <TableHeaderColumn>Butaca</TableHeaderColumn>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody displayRowCheckbox={false}>
+                        { this.state.eticket.tickets.map((ticket, i) => (
+                              <TableRow key={i} selectable={false}>
+                                <TableRowColumn>{ticket.nro_ticket}</TableRowColumn>
+                                <TableRowColumn>{ticket.categoria}</TableRowColumn>
+                                <TableRowColumn>{ticket.fila == "0" ? "-": ticket.fila}</TableRowColumn>
+                                <TableRowColumn>{ticket.butaca == "0" ? "-": ticket.butaca}</TableRowColumn>
+                              </TableRow>
+                            )
+                        )}
+                        </TableBody>
+                      </Table>
+                  )}
+                  <Divider />
+                  <RaisedButton label="Marcar Acceso" disabled={this.state.all_marked} onTouchTap={this.handleSubmit} fullWidth={true}/>
+              </Paper>
             </div>
         )
     }
@@ -478,22 +445,116 @@ const NoMatch = React.createClass({
 
     render(){
         return (
-            <div className="content">
-                <p className="content-padded">Lo sentimos pero esta vista no esta definida. <Link to='/home' >Volver al inicio</Link>
-                </p>
+            <div className="content-padded">
+                <p>Lo sentimos pero esta vista no esta definida. <Link to='/home' >Volver al inicio</Link></p>
             </div>
-        )    
+        )
     }
 })
+
+function closeActiveSession(){
+    sessionStorage.loggedIn = "";
+    sessionStorage.shows = "";
+    sessionStorage.user = "";
+}
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleToggle = this.handleToggle.bind(this);
+        this.signOut = this.signOut.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.goHome = this.goHome.bind(this);
+        this.refresh = this.refresh.bind(this);
+        this.state = {
+            open: false
+        };
+    }
+
+    componentDidMount(){
+        console.log(darkBaseTheme);
+    }
+
+    handleToggle(){
+        this.setState({open: !this.state.open});
+    }
+    
+    handleClose(){
+        this.setState({open: false});
+    }
+    
+    refresh(event){
+        this.handleClose();
+        sessionStorage.shows = "";
+        browserHistory.push("/home");
+    }
+
+    signOut(event){
+        this.handleClose();
+        closeActiveSession();
+        browserHistory.push("/");
+    }
+
+    goHome(event){
+        this.handleClose();
+        browserHistory.push("/home");
+    }
+
+    render(){
+        return(
+            <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+                <div>
+                    { !isNotLoggedIn() && (  
+                        <Drawer
+                          docked={false}
+                          width={250}
+                          open={this.state.open}
+                          onRequestChange={(open) => this.setState({open})}
+                        >
+                                <Card>
+                                    <CardMedia>
+                                        <img src="img/Viaticket_2017_2.png" />
+                                    </CardMedia>
+                                    <CardHeader
+                                       title={sessionStorage.loggedIn}
+                                       subtitle="Usuario logeado"
+                                    />
+                                </Card>
+                                <Divider/>
+                                <MenuItem onTouchTap={this.goHome} primaryText="Principal" />
+                                <Divider/>
+                                <MenuItem onTouchTap={this.refresh} primaryText="Actualizar" />
+                                <Divider/>
+                                <MenuItem onTouchTap={this.signOut} primaryText="Cerrar Sesión" />
+                        </Drawer>
+                    )}
+                    <div className="content">
+                        { !isNotLoggedIn() && (  
+                            <AppBar
+                                title={<span className="app-bar-text"><strong style={{ color: amber500 }}>bo</strong>letero</span>}
+                                onLeftIconButtonTouchTap={this.handleToggle}
+                                style={{
+                                    backgroundColor: red700,
+                                    height: 55
+                                }}
+                            />
+                        )}
+                        {this.props.children}
+                    </div>
+                </div>
+            </MuiThemeProvider>
+       )
+    }
+}
 
 
 ReactDOM.render((
       <Router history={browserHistory}>
-        <Route path='/' component={Login}/>
-        <Route path='/home' component={Home}/>
-        <Route path='/workspace/:id' component={Workspace}/>
-        <Route path='/scan/:id' component={ScanTicket}/>
-        <Route path='/settings' component={Settings}/>
-        <Route path='/*' component={NoMatch}/>
+          <Route path="/" component={App} >
+             <IndexRoute component={Login}/>
+             <Route path='home' component={Home}/>
+             <Route path='scan/:id' component={ScanTicket}/>
+             <Route path='*' component={NoMatch}/>
+          </Route>
       </Router>
 ), document.getElementById("root"))
