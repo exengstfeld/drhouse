@@ -31,6 +31,7 @@
     }
   };
 
+/*
   var getModal = function (event) {
     var modalToggle = findModals(event.target);
     if (modalToggle && modalToggle.hash) {
@@ -47,6 +48,7 @@
       event.preventDefault(); // prevents rewriting url (apps can still use hash values in url)
     }
   });
+*/
 }());
 
 /* ========================================================================
