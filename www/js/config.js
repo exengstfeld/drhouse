@@ -7,8 +7,10 @@ var {amber500, redA700} = require('material-ui/styles/colors');
 
 module.exports = {
     // api_base_url: "http://192.168.50.14:8001/api/v1.3",
-    api_base_url: "http://gt-api-staging.msa:8001/api/v1.3",
+    // api_base_url: "http://gt-api-staging.msa:8001/api/v1.3",
     // api_base_url: "http://caba2.msa.com.ar:18001/api/v1.3",
+
+    api_base_url: "http://localhost:5500/api/mobile",
 
     input_style: {
       marginLeft: 13

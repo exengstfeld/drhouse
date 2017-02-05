@@ -42,6 +42,7 @@ module.exports = class Login extends React.Component {
     processLoginResponse(response) {
         if (response.success){
             sessionStorage.loggedIn = this.state.username;
+            sessionStorage.loggedToken = response.data.token;
             sessionStorage.user = JSON.stringify(response.data);
             browserHistory.push('/home');
         } else {
@@ -57,7 +58,7 @@ module.exports = class Login extends React.Component {
     }
     
     handleSubmit() {
-        fetch(api_base_url + '/mobile/usuario/login', {
+        fetch(api_base_url + '/usuario/login', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({"id_usuario": this.state.username, "password": this.state.password})
@@ -78,10 +79,7 @@ module.exports = class Login extends React.Component {
             <div>
                  <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                  <Card>
-                   <CardMedia>
-                     <img src="img/Viaticket_2017_2.png" />
-                   </CardMedia>
-                   <CardTitle title="Login" subtitle="Acceda con sus credenciales habituales de boletería" />
+                   <CardTitle title="Login" subtitle="Acceda con sus credenciales" />
                    <CardText>
                      <TextField style={input_style} underlineShow={false} floatingLabelText="Username" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
                      <Divider />
@@ -90,6 +88,9 @@ module.exports = class Login extends React.Component {
                    <CardActions>
                      <RaisedButton label="Login" onTouchTap={this.handleSubmit} fullWidth={true}/>
                    </CardActions>
+                   <CardMedia>
+                     <img src="img/todo.jpg" />
+                   </CardMedia>
                  </Card>
             </div>
         )

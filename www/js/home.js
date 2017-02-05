@@ -9,20 +9,37 @@ var locateFunction = require ('../js/utils').locateFunction
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 
 function ShowCard(props){
-    return (
+    var avatar_path = ""
+    if (props.show.status == 1){
+        avatar_path = "img/danger.png"
+    }             
+    if (props.show.status == 2){
+        avatar_path = "img/ok.png"
+    }             
+    if (props.show.status == 3){
+        avatar_path = "img/alert.png"
+    }   
+    return (          
         <Card>
-          <CardHeader
-            title={props.show.nombre}
-            subtitle= {props.show.lugar}
-            actAsExpander={true}
-            showExpandableButton={true}
-          />
-          <CardText expandable={true}>
-              Será en {props.show.lugar_domicilio} en la sala {props.show.sala} el día {props.show.fecha} a las {props.show.hora}hs. Se puede marcar entrada hasta el {props.show.fecha_baja} a las {props.show.hora_baja}hs
-          </CardText>
-          <CardActions>
-            <FlatButton href={"index.html#/scan/"+props.show.id} label="Leer Ticket" />
-          </CardActions>
+            <CardHeader
+                avatar = {avatar_path}
+                title= {props.show.BuscarComo} 
+                subtitle= {<div>{props.show.DescProducto} ({props.show.HoraDesde} - {props.show.HoraHasta})</div>}
+                actAsExpander={true}
+                showExpandableButton={true}
+            />
+            <CardText expandable={true}>
+                <div>
+                    <b> Horario </b> {props.show.HoraDesde} - {props.show.HoraHasta}.
+                </div><div>
+                    <b> Telefono </b> {props.show.Telefono1}.
+                </div><div>
+                    <b> Direccion </b> {props.show.Domicilio}.
+                </div>   
+            </CardText>
+            <CardActions>
+                <FlatButton href={"index.html#/Patients"} label="Detalle" />
+            </CardActions>
         </Card>
     )
 }
@@ -48,7 +65,7 @@ module.exports = class Home extends React.Component {
     }
 
     loadFunctions(){ 
-        fetch(api_base_url + '/mobile/funciones/'+sessionStorage.loggedIn).then(response => response.json()).then(function(response){
+        fetch(api_base_url + '/home/'+sessionStorage.loggedToken).then(response => response.json()).then(function(response){
             if (response.success){
                 this.setState({shows: response.data});
                 sessionStorage.shows = JSON.stringify(response.data);
