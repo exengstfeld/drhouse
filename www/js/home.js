@@ -38,7 +38,7 @@ function ShowCard(props){
                 </div>   
             </CardText>
             <CardActions>
-                <FlatButton href={"index.html#/Patients"} label="Detalle" />
+                <FlatButton href={"/patients"} label="Detalle" />
             </CardActions>
         </Card>
     )
@@ -65,7 +65,11 @@ module.exports = class Home extends React.Component {
     }
 
     loadFunctions(){ 
-        fetch(api_base_url + '/home/'+sessionStorage.loggedToken).then(response => response.json()).then(function(response){
+        fetch(api_base_url + '/home',{
+                method: 'GET',
+                headers: {  "Content-Type": "application/json", 
+                            "Authorization": sessionStorage.loggedToken}}
+                ).then(response => response.json()).then(function(response){
             if (response.success){
                 this.setState({shows: response.data});
                 sessionStorage.shows = JSON.stringify(response.data);

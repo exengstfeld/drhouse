@@ -58,9 +58,9 @@ module.exports = class Login extends React.Component {
     }
     
     handleSubmit() {
-        fetch(api_base_url + '/usuario/login', {
+        fetch(api_base_url + '/login', {
                 method: 'POST',
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({"id_usuario": this.state.username, "password": this.state.password})
         }).then((response) => {
             if (response.status == 200) {
