@@ -7,6 +7,7 @@ var api_base_url = require('../js/config').api_base_url
 var form_style = require('../js/config').form_style
 var locateFunction = require ('../js/utils').locateFunction 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
+var get = require('../js/utils').get
 
 function ShowCard(props){
     var avatar_path = ""
@@ -65,11 +66,7 @@ module.exports = class Home extends React.Component {
     }
 
     loadFunctions(){ 
-        fetch(api_base_url + '/home',{
-                method: 'GET',
-                headers: {  "Content-Type": "application/json", 
-                            "Authorization": sessionStorage.loggedToken}}
-                ).then(response => response.json()).then(function(response){
+        get(api_base_url + '/home').then(function(response){
             if (response.success){
                 this.setState({shows: response.data});
                 sessionStorage.shows = JSON.stringify(response.data);

@@ -8,6 +8,7 @@ var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
 var api_base_url = require('../js/config').api_base_url
 var closeActiveSession = require('../js/utils').closeActiveSession
+var post = require('../js/utils').post
 
 module.exports = class Login extends React.Component {
 
@@ -58,16 +59,7 @@ module.exports = class Login extends React.Component {
     }
     
     handleSubmit() {
-        fetch(api_base_url + '/login', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({"id_usuario": this.state.username, "password": this.state.password})
-        }).then((response) => {
-            if (response.status == 200) {
-                return response.json()
-            }
-            throw Error("Error de conexion, por favor, intente más tarde: "+ response.statusText)
-        }).then(
+        post(api_base_url + '/login', {"id_usuario": this.state.username, "password": this.state.password}).then(
             this.processLoginResponse 
         ).catch(
             this.processLoginError

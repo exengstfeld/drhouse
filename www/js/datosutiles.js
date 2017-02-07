@@ -10,6 +10,7 @@ var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
 var api_base_url = require('../js/config').api_base_url
 var closeActiveSession = require('../js/utils').closeActiveSession
+var get = require('../js/utils').get
 
 
 function ShowCard(props){
@@ -49,11 +50,7 @@ module.exports = class DatosUtiles extends React.Component {
         }
     }
     loadData(){ 
-        fetch(api_base_url + '/datos_utiles',{
-                method: 'GET',
-                headers: {  "Content-Type": "application/json", 
-                            "Authorization": sessionStorage.loggedToken}}
-                ).then(response => response.json()).then(function(response){
+        get(api_base_url + '/datos_utiles').then(function(response){
             if (response.success){
                 this.setState({Datos_Utiles: response.data});
                 sessionStorage.Datos_Utiles = JSON.stringify(response.data);
