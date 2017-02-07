@@ -33,6 +33,15 @@ module.exports = {
       width: "40px"
     },
 
+    styles_tabs:{
+      headline: {
+        fontSize: 20,
+        paddingTop: 0,
+        marginBottom: 5,
+        fontWeight: 400,
+        },
+      },
+
     darkBaseTheme: getMuiTheme({
           spacing: spacing,
           fontFamily: 'Roboto, sans-serif',

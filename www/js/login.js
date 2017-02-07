@@ -81,9 +81,9 @@ module.exports = class Login extends React.Component {
                  <Card>
                    <CardTitle title="Login" subtitle="Acceda con sus credenciales" />
                    <CardText>
-                     <TextField style={input_style} underlineShow={false} floatingLabelText="Username" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
+                     <TextField style={input_style} underlineShow={false} floatingLabelText="Usuario" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
                      <Divider />
-                     <TextField style={input_style} underlineShow={false} floatingLabelText="Password" id="password-field" value={this.state.password} type="password" onChange={this.handlePasswordChange} />
+                     <TextField style={input_style} underlineShow={false} floatingLabelText="Contraseña" id="password-field" value={this.state.password} type="password" onChange={this.handlePasswordChange} />
                    </CardText>
                    <CardActions>
                      <RaisedButton label="Login" onTouchTap={this.handleSubmit} fullWidth={true}/>
