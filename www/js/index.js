@@ -34,7 +34,7 @@ class App extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.goHome = this.goHome.bind(this);
         this.goUtiles = this.goUtiles.bind(this);
-        this.refresh = this.refresh.bind(this);
+        // this.refresh = this.refresh.bind(this);
         this.state = {
             open: false
         };
@@ -46,12 +46,6 @@ class App extends React.Component {
     
     handleClose(){
         this.setState({open: false});
-    }
-    
-    refresh(event){
-        this.handleClose();
-        sessionStorage.shows = "";
-        browserHistory.push("/home");
     }
 
     signOut(event){
@@ -71,10 +65,6 @@ class App extends React.Component {
         browserHistory.push("/utiles");
     }
     
-   goPatients(event){
-        browserHistory.push("/patients");
-    }
-
     render(){
         return(
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
@@ -96,9 +86,7 @@ class App extends React.Component {
                             />
                         </Card>
                         <Divider/>
-                        <MenuItem onTouchTap={this.refresh} primaryText="Actualizar" />
-                        <Divider/>
-                        <MenuItem onTouchTap={this.goHome} primaryText="Principal" />
+                        <MenuItem onTouchTap={this.goHome} primaryText="Listado del Dia" />
                         <Divider/>
                         <MenuItem onTouchTap={this.goUtiles} primaryText="Datos útiles" />
                         <Divider/>

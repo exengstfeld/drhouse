@@ -9,8 +9,15 @@ var locateFunction = require ('../js/utils').locateFunction
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var get = require('../js/utils').get
 
+var RaisedButton = require('material-ui').RaisedButton
+var TextField = require('material-ui').TextField
+var Divider = require('material-ui').Divider
+// var Notification = require('../js/common').Notification
+
+
 function ShowCard(props){
     var avatar_path = ""
+
     if (props.show.status == 1){
         avatar_path = "img/danger.png"
     }             
@@ -20,6 +27,7 @@ function ShowCard(props){
     if (props.show.status == 3){
         avatar_path = "img/alert.png"
     }   
+
     return (          
         <Card>
             <CardHeader
@@ -31,15 +39,15 @@ function ShowCard(props){
             />
             <CardText expandable={true}>
                 <div>
-                    <b> Horario </b> {props.show.HoraDesde} - {props.show.HoraHasta}.
+                    <b> Horario: </b> {props.show.HoraDesde} - {props.show.HoraHasta}.
                 </div><div>
-                    <b> Telefono </b> {props.show.Telefono1}.
+                    <b> Telefono: </b> {props.show.Telefono1}.
                 </div><div>
-                    <b> Direccion </b> {props.show.Domicilio}.
+                    <b> Direccion: </b> {props.show.Domicilio}.
                 </div>   
             </CardText>
             <CardActions>
-                <FlatButton href={"/patients"} label="Detalle" />
+                <FlatButton label="Detalle" />
             </CardActions>
         </Card>
     )
@@ -48,9 +56,23 @@ function ShowCard(props){
 module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
+        this.goPatients = this.goPatients.bind(this);
+        this.refresh = this.refresh.bind(this);
         this.state = {
-            shows: []
+            shows: [],
+            expanded: false,
         };
+    }
+    
+    goPatients(event){
+        sessionStorage.Atendiendo = JSON.stringify(this.state.shows[0])
+        browserHistory.push("/patients");
+    };
+    
+    refresh(event){
+        sessionStorage.shows = "";
+        this.loadFunctions()
+        // browserHistory.push("/home");
     }
 
     componentDidMount(){
@@ -75,16 +97,21 @@ module.exports = class Home extends React.Component {
             }
         }.bind(this))
     }
-    
+
     render(){
         return(
             <div>
+                <RaisedButton label="Actualizar Listado" onTouchTap={this.refresh} fullWidth={true}/>
+
+                <RaisedButton label="MOC Seleccionar Paciente !!!!!!! " onTouchTap={this.goPatients} fullWidth={true}/>
+
                 <Paper style={form_style} zDepth={2}>
                     {
                         this.state.shows.map((v, i) => (
                             <div key={i}>
                                 <ShowCard show={v} />
                                 <br/>
+                                <Divider/>
                             </div>
                           )
                         )
