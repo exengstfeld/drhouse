@@ -8,6 +8,7 @@ var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
 var api_base_url = require('../js/config').api_base_url
 var closeActiveSession = require('../js/utils').closeActiveSession
+var post = require('../js/utils').post
 
 module.exports = class Login extends React.Component {
 
@@ -58,16 +59,7 @@ module.exports = class Login extends React.Component {
     }
     
     handleSubmit() {
-        fetch(api_base_url + '/login', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({"id_usuario": this.state.username, "password": this.state.password})
-        }).then((response) => {
-            if (response.status == 200) {
-                return response.json()
-            }
-            throw Error("Error de conexion, por favor, intente más tarde: "+ response.statusText)
-        }).then(
+        post(api_base_url + '/login', {"id_usuario": this.state.username, "password": this.state.password}).then(
             this.processLoginResponse 
         ).catch(
             this.processLoginError
@@ -79,6 +71,9 @@ module.exports = class Login extends React.Component {
             <div>
                  <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                  <Card>
+                   <CardMedia>
+                     <img src="img/softwerk.png" />
+                   </CardMedia>
                    <CardTitle title="Login" subtitle="Acceda con sus credenciales" />
                    <CardText>
                      <TextField style={input_style} underlineShow={false} floatingLabelText="Usuario" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
@@ -88,9 +83,6 @@ module.exports = class Login extends React.Component {
                    <CardActions>
                      <RaisedButton label="Login" onTouchTap={this.handleSubmit} fullWidth={true}/>
                    </CardActions>
-                   <CardMedia>
-                     <img src="img/todo.jpg" />
-                   </CardMedia>
                  </Card>
             </div>
         )

@@ -1,3 +1,12 @@
+call = function(url, options){
+    return fetch(url, options).then((response) => {
+        if (response.status == 200) {
+            return response.json()
+        }
+        throw Error("Ha ocurrido un error grave: "+ response.statusText)
+    })
+}
+
 module.exports = {
     isNotLoggedIn: function(){
         return (sessionStorage.loggedIn == "") || (sessionStorage.loggedIn == undefined)
@@ -18,4 +27,24 @@ module.exports = {
         }
         throw Error("No se ha localizado la funcion "+ id_funcion);
     },
+    post: function(url, body){
+        options = {
+            "method": "POST",
+            "headers":{
+                "Content-Type": "application/json",
+                "session-token": sessionStorage.loggedToken
+            },
+            "body": JSON.stringify(body)
+        }
+        return call(url, options);    
+    },
+    get: function(url){
+        options = {
+            "method": "GET",
+            "headers":{
+                "session-token": sessionStorage.token
+            }
+        }
+        return call(url, options);    
+    }
 }

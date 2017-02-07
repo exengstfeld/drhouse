@@ -6,10 +6,6 @@ var spacing = require('material-ui/styles/spacing')
 var {amber500, redA700} = require('material-ui/styles/colors');
 
 module.exports = {
-    // api_base_url: "http://192.168.50.14:8001/api/v1.3",
-    // api_base_url: "http://gt-api-staging.msa:8001/api/v1.3",
-    // api_base_url: "http://caba2.msa.com.ar:18001/api/v1.3",
-
     api_base_url: "http://localhost:5500/api/mobile",
 
     input_style: {
@@ -21,7 +17,7 @@ module.exports = {
     },
 
     app_bar_style: {
-      backgroundColor: "rgb(174, 36, 36)"
+      backgroundColor: "rgb(173, 0, 0)"
     },
 
     app_bar_strong_style: {

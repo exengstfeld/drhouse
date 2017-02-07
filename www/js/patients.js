@@ -8,10 +8,15 @@ var form_style = require('../js/config').form_style
 var locateFunction = require ('../js/utils').locateFunction 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var input_style = require('../js/config').input_style
+
 var RaisedButton = require('material-ui').RaisedButton
 var styles = require('../js/config').styles_tabs 
 var Divider = require('material-ui').Divider
 var {Tabs, Tab} = require('material-ui/Tabs')
+=======
+var closeActiveSession = require('../js/utils').closeActiveSession
+var get = require('../js/utils').get
+>>>>>>> 14e54cbf9ef3c53a07c2c19eb8464bb7e564b7fb
 
 
 function Hoja_Admision(hoja){
