@@ -1,7 +1,6 @@
 .app-bar-text {
     color: #ffffff !important;
     @import url('https://fonts.googleapis.com/css?family=News+Cycle');
-    font-family: 'News Cycle', sans-serif;
     font-size: xx-large;
     line-height: 60px;
     text-align: right;

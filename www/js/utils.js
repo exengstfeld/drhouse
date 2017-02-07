@@ -3,6 +3,9 @@ call = function(url, options){
         if (response.status == 200) {
             return response.json()
         }
+        if (response.status == 401) {
+            alert("sesion invalida");
+        }
         throw Error("Ha ocurrido un error grave: "+ response.statusText)
     })
 }
@@ -42,7 +45,7 @@ module.exports = {
         options = {
             "method": "GET",
             "headers":{
-                "session-token": sessionStorage.token
+                "session-token": sessionStorage.loggedToken
             }
         }
         return call(url, options);    

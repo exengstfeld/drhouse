@@ -21,7 +21,7 @@ module.exports = {
     },
 
     app_bar_strong_style: {
-      color: amber500
+      color: fullWhite
     },
 
     logo_style: {

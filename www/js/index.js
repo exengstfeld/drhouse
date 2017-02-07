@@ -108,7 +108,7 @@ class App extends React.Component {
                     <div className="content">
                         { !isNotLoggedIn() && (  
                             <AppBar
-                                title={<span className="app-bar-text"><strong style={app_bar_strong_style}>Dr</strong>House</span>}
+                                title={<span className="app-bar-text"><strong style={app_bar_strong_style}>Dr</strong>HOUSE</span>}
                                 onLeftIconButtonTouchTap={this.handleToggle}
                                 style={app_bar_style}
                             />
