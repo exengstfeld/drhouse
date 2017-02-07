@@ -32,7 +32,7 @@ module.exports = {
             "method": "POST",
             "headers":{
                 "Content-Type": "application/json",
-                "Authorization": sessionStorage.loggedToken
+                "session-token": sessionStorage.loggedToken
             },
             "body": JSON.stringify(body)
         }
@@ -42,7 +42,7 @@ module.exports = {
         options = {
             "method": "GET",
             "headers":{
-                "Authorization": sessionStorage.token
+                "session-token": sessionStorage.token
             }
         }
         return call(url, options);    

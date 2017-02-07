@@ -71,6 +71,9 @@ module.exports = class Login extends React.Component {
             <div>
                  <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                  <Card>
+                   <CardMedia>
+                     <img src="img/softwerk.png" />
+                   </CardMedia>
                    <CardTitle title="Login" subtitle="Acceda con sus credenciales" />
                    <CardText>
                      <TextField style={input_style} underlineShow={false} floatingLabelText="Username" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
@@ -80,9 +83,6 @@ module.exports = class Login extends React.Component {
                    <CardActions>
                      <RaisedButton label="Login" onTouchTap={this.handleSubmit} fullWidth={true}/>
                    </CardActions>
-                   <CardMedia>
-                     <img src="img/todo.jpg" />
-                   </CardMedia>
                  </Card>
             </div>
         )

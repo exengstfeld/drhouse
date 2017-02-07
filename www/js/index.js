@@ -18,6 +18,7 @@ var Home = require('../js/home')
 var utiles = require('../js/datosutiles')
 var patients = require('../js/patients')
 var darkBaseTheme = require('../js/config').darkBaseTheme
+var lightBaseTheme = require('material-ui/styles/baseThemes/lightBaseTheme')
 var closeActiveSession = require('../js/utils').closeActiveSession
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var app_bar_style = require('../js/config').app_bar_style 
@@ -76,7 +77,7 @@ class App extends React.Component {
 
     render(){
         return(
-            <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+            <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
                 <div>
                     { !isNotLoggedIn() && (  
                         <Drawer
@@ -87,7 +88,7 @@ class App extends React.Component {
                         >
                         <Card>
                             <CardMedia>
-                                <img src="img/Viaticket_2017_2.png" />
+                                <img src="img/softwerk.png" />
                             </CardMedia>
                             <CardHeader
                                 title={sessionStorage.loggedIn}
@@ -107,7 +108,7 @@ class App extends React.Component {
                     <div className="content">
                         { !isNotLoggedIn() && (  
                             <AppBar
-                                title={<span className="app-bar-text"><strong style={app_bar_strong_style}>Dr</strong>Home</span>}
+                                title={<span className="app-bar-text"><strong style={app_bar_strong_style}>Dr</strong>House</span>}
                                 onLeftIconButtonTouchTap={this.handleToggle}
                                 style={app_bar_style}
                             />
