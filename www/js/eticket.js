@@ -7,7 +7,6 @@ var Divider = require('material-ui').Divider
 var browserHistory = require('react-router').hashHistory
 var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
-var api_base_url = require('../js/config').api_base_url
 var form_style = require('../js/config').form_style
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 
@@ -66,7 +65,7 @@ module.exports = class ScanTicket extends React.Component {
     }
 
     validateETicket(){
-        fetch(api_base_url + '/mobile/eticket/validar', {
+        fetch('/mobile/eticket/validar', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({"hash": this.state.code, "id_funcion": this.state.id_funcion})
@@ -103,7 +102,7 @@ module.exports = class ScanTicket extends React.Component {
     }
 
     handleSubmit() {
-        fetch(api_base_url + '/mobile/eticket/marcar', {
+        fetch('/mobile/eticket/marcar', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({"hash": this.state.code, "id_funcion": this.state.id_funcion})

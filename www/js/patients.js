@@ -3,7 +3,6 @@ var browserHistory = require('react-router').hashHistory
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var Paper = require('material-ui').Paper
 var FlatButton = require('material-ui').FlatButton
-var api_base_url = require('../js/config').api_base_url
 var form_style = require('../js/config').form_style
 var locateFunction = require ('../js/utils').locateFunction 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
@@ -132,9 +131,7 @@ module.exports = class Patients extends React.Component {
         }
 
     marcar_salida(){
-
-
-        post(api_base_url + '/marcar/salida',{IDPrestacionPrestador: sessionStorage.loggedBusy.IDPrestacionPrestador}).then(function(response){
+        post('/marcar/salida',{IDPrestacionPrestador: sessionStorage.loggedBusy.IDPrestacionPrestador}).then(function(response){
             if (response.success){
                 sessionStorage.loggedBusy = null;
                 browserHistory.push('/home');
@@ -148,7 +145,7 @@ module.exports = class Patients extends React.Component {
 
 
     get_prestaciones_list(){ 
-        get(api_base_url + '/prestaciones_paciente/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
+        get('/prestaciones_paciente/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
                 this.setState({prestaciones_list: response.data});
             } else {
@@ -168,7 +165,7 @@ module.exports = class Patients extends React.Component {
     }
 
     save_orden(){
-        post(api_base_url + '/ordenes_medicas',{'observacion':this.state.Observacion, 'idEnte': this.state.paciente.IdEnte}).then(
+        post('/ordenes_medicas',{'observacion':this.state.Observacion, 'idEnte': this.state.paciente.IdEnte}).then(
             this.new_orden
         ).catch(
             this.setState({feedback: error, error: true})
@@ -183,7 +180,7 @@ module.exports = class Patients extends React.Component {
     }
         
     get_ordenes_list(){ 
-        get(api_base_url + '/ordenes_medicas/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
+        get('/ordenes_medicas/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
                 this.setState({ordenes_list: response.data});
             } else {
@@ -192,8 +189,8 @@ module.exports = class Patients extends React.Component {
         }.bind(this))
     }
 
-    get_hoja_admision(){ 
-        get(api_base_url + '/hoja_admision/' + this.state.paciente.IDPrestacionPrestador).then(function(response){
+    get_hoja_admision(){
+        get('/hoja_admision/' + this.state.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
                 this.setState({shows: response.data});
             } else {

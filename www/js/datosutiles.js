@@ -8,7 +8,6 @@ var RaisedButton = require('material-ui').RaisedButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
-var api_base_url = require('../js/config').api_base_url
 var closeActiveSession = require('../js/utils').closeActiveSession
 var get = require('../js/utils').get
 
@@ -50,7 +49,7 @@ module.exports = class DatosUtiles extends React.Component {
         }
     }
     loadData(){ 
-        get(api_base_url + '/datos_utiles').then(function(response){
+        get('/datos_utiles').then(function(response){
             if (response.success){
                 this.setState({Datos_Utiles: response.data});
                 sessionStorage.Datos_Utiles = JSON.stringify(response.data);
