@@ -16,6 +16,9 @@ var Divider = require('material-ui').Divider
 var {Tabs, Tab} = require('material-ui/Tabs')
 var closeActiveSession = require('../js/utils').closeActiveSession
 var get = require('../js/utils').get
+var post = require('../js/utils').post
+
+
 
 
 function Hoja_Admision(data){
@@ -76,23 +79,21 @@ module.exports = class Patients extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleComentarioChange = this.handleComentarioChange.bind(this)
+        this.handleObservacionChange = this.handleObservacionChange.bind(this)
         this.new_prestacion = this.new_prestacion.bind(this);
         this.new_orden = this.new_orden.bind(this)
+        this.save_orden = this.save_orden.bind(this)
+        this.get_hoja_admision = this.get_hoja_admision.bind(this)
+        this.marcar_salida = this.marcar_salida.bind(this)
+        this.show_accion = this.show_accion.bind(this)
+
         this.state = {
             paciente: JSON.parse(sessionStorage.Atendiendo),
             value:'prestaciones',
             show_new_prestacion:true,
             show_new_orden:true,
-            'comentario':'',
-            data_admision:{
-                "FecEmision":"19/10/2016",
-                "NroRevision":"ASD9862",
-                "DescEnfermedadActual":"Incapacidad total por accidente Laboral",  
-                "DescDiagnosticoIngreso":"Discapacidad Motora",
-                "DescMotivoInternacion":"Accidente Laboral 007",
-                "DescReaccionesAdvMedicamentos":"Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. "
-                },
+            Observacion:'',
+            data_admision:{},
             ordenes_list:[{
                 "FecEmision":"01/01/2015",
                 "BuscarComo":"Dr. Pirulo Ortega",
@@ -130,14 +131,21 @@ module.exports = class Patients extends React.Component {
             }
         }
 
-    handleChange(value){
-        this.setState({
-          value: value,
-          show_new_prestacion:true,
-          show_new_orden:true,
-          comentario:'',
-        })
+    marcar_salida(){
+
+
+        post(api_base_url + '/marcar/salida',{IDPrestacionPrestador: sessionStorage.loggedBusy.IDPrestacionPrestador}).then(function(response){
+            if (response.success){
+                sessionStorage.loggedBusy = null;
+                browserHistory.push('/home');
+            } else {
+                this.setState({feedback: response.data});
+            }
+        }.bind(this))
     }
+
+
+
 
     get_prestaciones_list(){ 
         get(api_base_url + '/prestaciones_paciente/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
@@ -149,8 +157,8 @@ module.exports = class Patients extends React.Component {
         }.bind(this))
     }
 
-    handleComentarioChange(event){
-        this.setState({comentario: event.target.value});
+    handleObservacionChange(event){
+        this.setState({Observacion: event.target.value});
     }
 
     new_prestacion(){
@@ -158,22 +166,22 @@ module.exports = class Patients extends React.Component {
           show_new_prestacion: !this.state.show_new_prestacion,
         })
     }
-    
-    show_new_prestacion(){
-        return this.state.show_new_prestacion
-    }
 
+    save_orden(){
+        post(api_base_url + '/ordenes_medicas',{'observacion':this.state.Observacion, 'idEnte': this.state.paciente.IdEnte}).then(
+            this.new_orden
+        ).catch(
+            this.setState({feedback: error, error: true})
+        )     
+    }
 
     new_orden(){
         this.setState({
           show_new_orden: !this.state.show_new_orden,
+          Observacion:'',
         })
     }
-    
-    show_new_orden(){
-        return this.state.show_new_orden
-    }
-    
+        
     get_ordenes_list(){ 
         get(api_base_url + '/ordenes_medicas/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
@@ -184,22 +192,70 @@ module.exports = class Patients extends React.Component {
         }.bind(this))
     }
 
-    get_hoja_admision(){
+    get_hoja_admision(){ 
         get(api_base_url + '/hoja_admision/' + this.state.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
-                this.setState({data_admision:response.data});
+                this.setState({shows: response.data});
             } else {
-                this.setState({feedback: response.data});
+               this.setState({feedback: response.data});
             }
         }.bind(this))
-    }    
+    }
 
+    handleChange(value){
+        this.setState({
+          value: value,
+          show_new_prestacion:true,
+          show_new_orden:true,
+          Observacion:'',
+        })
+    }
+
+    show_accion(){
+        console.info('show_accion')
+        if(sessionStorage.loggedBusy != null && 
+            sessionStorage.loggedBusy.IDPrestacionPrestador != sessionStorage.Atendiendo.IDPrestacionPrestador){
+            console.info('bussy')
+            return 'bussy'
+        }
+
+        if(sessionStorage.loggedBusy != null && 
+            sessionStorage.loggedBusy.IDPrestacionPrestador == sessionStorage.Atendiendo.IDPrestacionPrestador){                    
+            console.info('marcar_salida')
+            return 'marcar_salida'
+        }
+        if(sessionStorage.loggedBusy == null){
+            console.info('marcar_entrada')
+            return 'marcar_entrada'
+        }
+    }
 
 
     render(){
         return(
             <div>
-                <RaisedButton label="Marcar Entrada" onTouchTap={this.goPatients} fullWidth={true}/>
+                { this.show_accion == 'bussy' && (
+                    (<RaisedButton 
+                        label = 'nombre_busy'
+                        onTouchTap={this.goPatients} 
+                        fullWidth={true}/>
+                    )
+                )}
+                { this.show_accion == 'marcar_salida' && (
+                    (<RaisedButton 
+                        label="Marcar Salida" 
+                        onTouchTap={this.marcar_salida} 
+                        fullWidth={true}/>
+                    )        
+                )}
+                { this.show_accion == 'marcar_entrada' && (
+                    (<RaisedButton 
+                        label="Marcar Entrada" 
+                        onTouchTap={this.goPatients} 
+                        fullWidth={true}/>
+                    )
+                )}
+                
                 <Card>
                     <CardHeader
                         title= {this.state.paciente.BuscarComo} 
@@ -222,8 +278,8 @@ module.exports = class Patients extends React.Component {
                     onChange={this.handleChange}
                   >
                     <Tab label="Prestaciones" value="prestaciones" >
-                        { this.show_new_prestacion() && (  
-                            <div>
+                        { this.state.show_new_prestacion && (  
+                            <div>   
                                 <RaisedButton label="Nueva Prestacion" onTouchTap={this.new_prestacion} fullWidth={true}/>
                                 {
                                     this.state.prestaciones_list.map((v, i) => (
@@ -237,16 +293,16 @@ module.exports = class Patients extends React.Component {
                                 }
                             </div>    
                         )}
-                        { !this.show_new_prestacion() && (
+                        { !this.state.show_new_prestacion && (
                             <div>
                                 <CardText>
                                     <TextField
-                                        id="id_comentario" 
+                                        id="id_Observacion" 
                                         hintText="Prestacion realizada"
                                         errorText="Campo Obligatorio."
                                         floatingLabelText="Prestacion realizada"
-                                        value={this.state.comentario} 
-                                        onChange={this.handleComentarioChange} 
+                                        value={this.state.Observacion} 
+                                        onChange={this.handleObservacionChange} 
                                         fullWidth={true}
                                         multiLine={true}
                                         rows={2}
@@ -262,7 +318,7 @@ module.exports = class Patients extends React.Component {
                     </Tab>
 
                     <Tab label="Órdenes" value="ordenes_medicas">
-                        { this.show_new_orden() && (  
+                        { this.state.show_new_orden && (  
                             <div>
                                <RaisedButton label="Nueva Orden" onTouchTap={this.new_orden} fullWidth={true}/>    
                                 {
@@ -277,23 +333,23 @@ module.exports = class Patients extends React.Component {
                                 }
                             </div>    
                         )}
-                        { !this.show_new_orden() && (
+                        { !this.state.show_new_orden && (
                             <div>
                                 <CardText>
                                     <TextField
-                                        id="id_comentario" 
+                                        id="id_Observacion" 
                                         hintText="Nueva orden medica"
                                         errorText="Campo Obligatorio."
                                         floatingLabelText="Nueva orden medica"
-                                        value={this.state.comentario} 
-                                        onChange={this.handleComentarioChange} 
+                                        value={this.state.Observacion} 
+                                        onChange={this.handleObservacionChange} 
                                         fullWidth={true}
                                         multiLine={true}
                                         rows={2}
                                     />
                                 </CardText>
                                 <CardActions>
-                                    <RaisedButton label="Guardar" onTouchTap={this.new_orden} />
+                                    <RaisedButton label="Guardar" onTouchTap={this.save_orden} />
                                     <RaisedButton label="Cancelar" onTouchTap={this.new_orden} />
                                 </CardActions>
                             </div>

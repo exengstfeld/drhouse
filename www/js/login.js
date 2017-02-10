@@ -44,6 +44,7 @@ module.exports = class Login extends React.Component {
         if (response.success){
             sessionStorage.loggedIn = this.state.username;
             sessionStorage.loggedToken = response.data.token;
+            sessionStorage.loggedBusy = response.data.busy;
             sessionStorage.user = JSON.stringify(response.data);
             browserHistory.push('/home');
         } else {
@@ -54,6 +55,7 @@ module.exports = class Login extends React.Component {
     processLoginError(error) {
         this.setState({feedback: error, error: true})
     }
+    
     handleClose(error) {
         this.setState({feedback: "", error: false, username: "", password: ""})
     }
