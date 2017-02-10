@@ -6,7 +6,6 @@ var RaisedButton = require('material-ui').RaisedButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
-var api_base_url = require('../js/config').api_base_url
 var closeActiveSession = require('../js/utils').closeActiveSession
 var post = require('../js/utils').post
 
@@ -59,7 +58,7 @@ module.exports = class Login extends React.Component {
     }
     
     handleSubmit() {
-        post(api_base_url + '/login', {"id_usuario": this.state.username, "password": this.state.password}).then(
+        post('/login', {"id_usuario": this.state.username, "password": this.state.password}).then(
             this.processLoginResponse 
         ).catch(
             this.processLoginError

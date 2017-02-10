@@ -1,5 +1,7 @@
+var api_base_url = require('../js/config').api_base_url
+
 call = function(url, options){
-    return fetch(url, options).then((response) => {
+    return fetch(api_base_url + url, options).then((response) => {
         if (response.status == 200) {
             return response.json()
         }

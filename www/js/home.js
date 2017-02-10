@@ -3,7 +3,6 @@ var browserHistory = require('react-router').hashHistory
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var Paper = require('material-ui').Paper
 var FlatButton = require('material-ui').FlatButton
-var api_base_url = require('../js/config').api_base_url
 var form_style = require('../js/config').form_style
 var locateFunction = require ('../js/utils').locateFunction 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
@@ -88,7 +87,7 @@ module.exports = class Home extends React.Component {
     }
 
     loadFunctions(){ 
-        get(api_base_url + '/home').then(function(response){
+        get('/home').then(function(response){
             if (response.success){
                 this.setState({shows: response.data});
                 sessionStorage.shows = JSON.stringify(response.data);
