@@ -14,6 +14,7 @@ var styles = require('../js/config').styles_tabs
 var Divider = require('material-ui').Divider
 var {Tabs, Tab} = require('material-ui/Tabs')
 var closeActiveSession = require('../js/utils').closeActiveSession
+var app_bar_style = require('../js/config').app_bar_style 
 var get = require('../js/utils').get
 var post = require('../js/utils').post
 
@@ -60,56 +61,127 @@ function ShowPrestaciones(props){
     )
 }
 
-function ShowOrdenes(props){
-    return (          
-        <Card>
-            <CardText>
+
+class Ordenes extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleObservacionChange = this.handleObservacionChange.bind(this)
+        this.new_orden = this.new_orden.bind(this)
+        this.save_orden = this.save_orden.bind(this)
+
+        this.state = {
+            show_new_orden: true,
+            ordenes_list: [],
+            feedback: "",
+            observacion: ""
+        }    
+    }
+
+    componentDidMount(){
+        if (isNotLoggedIn()){
+            browserHistory.push('/');
+        } else {
+            this.get_ordenes_list();
+        }
+    }
+
+    save_orden(){
+        post('/ordenes_medicas', {'observacion':this.state.observacion, 'idEnte': this.props.paciente.IdEnte}).then(
+            this.new_orden
+        ).catch(
+            this.setState({feedback: error, error: true})
+        )     
+    }
+
+    handleObservacionChange(event){
+        this.setState({Observacion: event.target.value});
+    }
+
+    new_orden(){
+        this.setState({
+          show_new_orden: !this.state.show_new_orden,
+          Observacion: '',
+        })
+    }
+        
+    get_ordenes_list(){ 
+        get('/ordenes_medicas/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
+            if (response.success){
+                this.setState({ordenes_list: response.data});
+            } else {
+                this.setState({feedback: response.data});
+            }
+        }.bind(this))
+    }
+
+    render(){
+        var view = (<span>Cargando vista...</span>);
+        if (this.state.show_new_orden){
+            view = (
                 <div>
-                   <b> {props.orden.BuscarComo} </b> ( {props.orden.FecEmision} ) 
-                </div>
+                   <RaisedButton label="Nueva Orden" onTouchTap={this.new_orden} fullWidth={true}/>    
+                    {
+                        this.state.ordenes_list.map((v, i) => (
+                            <div key={i}>
+                                <Paper style={form_style} zDepth={2}>
+                                    <Card>
+                                        <CardText>
+                                            <div>
+                                               <b> {v.BuscarComo} </b> ( {v.FecEmision} ) 
+                                            </div>
+                                            <div>
+                                                <i> {v.OBSOrdenMedica} </i>
+                                            </div>
+                                        </CardText>
+                                    </Card>
+                                </Paper>
+                            </div>
+                          )
+                        )
+                    }
+                </div>    
+            )
+        } else {
+            view = (
                 <div>
-                    <i> {props.orden.OBSOrdenMedica} </i>
+                    <CardText>
+                        <TextField
+                            id="id_Observacion" 
+                            hintText="Nueva orden medica"
+                            errorText="Campo Obligatorio."
+                            floatingLabelText="Nueva orden medica"
+                            value={this.state.Observacion} 
+                            onChange={this.handleObservacionChange} 
+                            fullWidth={true}
+                            multiLine={true}
+                            rows={2}
+                        />
+                    </CardText>
+                    <CardActions>
+                        <RaisedButton label="Guardar" onTouchTap={this.save_orden} />
+                        <RaisedButton label="Cancelar" onTouchTap={this.new_orden} />
+                    </CardActions>
                 </div>
-            </CardText>
-        </Card>
-    )
+            )
+        }
+
+        return (view)
+    }
 }
+
 module.exports = class Patients extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleObservacionChange = this.handleObservacionChange.bind(this)
         this.new_prestacion = this.new_prestacion.bind(this);
-        this.new_orden = this.new_orden.bind(this)
-        this.save_orden = this.save_orden.bind(this)
         this.get_hoja_admision = this.get_hoja_admision.bind(this)
         this.marcar_salida = this.marcar_salida.bind(this)
         this.show_accion = this.show_accion.bind(this)
 
         this.state = {
-            paciente: JSON.parse(sessionStorage.Atendiendo),
+            paciente: {},
             value:'prestaciones',
-            show_new_prestacion:true,
-            show_new_orden:true,
-            Observacion:'',
             data_admision:{},
-            ordenes_list:[{
-                "FecEmision":"01/01/2015",
-                "BuscarComo":"Dr. Pirulo Ortega",
-                "OBSOrdenMedica":"Hacer radiografia de torax, y no se que mas escribir pero tengo que rellenar esto "
-                },{
-                "FecEmision":"05/10/1993",
-                "BuscarComo":"Un NOmbre Bien Largo para Romper las BOlas ",
-                "OBSOrdenMedica":"Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. " 
-                },{
-                "FecEmision":"21/05/2015",
-                "BuscarComo":"Dr. Dos del Tres",
-                "OBSOrdenMedica":"Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. "
-                },{
-                "FecEmision":"21/05/2017",
-                "BuscarComo":"Dr. Nose Cuanto",
-                "OBSOrdenMedica":"Control general de todo"
-                }],
             prestaciones_list:[{
                 "FecVisita":"21/08/1990",
                 "Descproducto":"Visita Tecnica",
@@ -130,6 +202,10 @@ module.exports = class Patients extends React.Component {
             }
         }
 
+    componentDidMount(){
+        this.setState({paciente: JSON.parse(sessionStorage.shows)[this.props.params.id]})
+    }
+
     marcar_salida(){
         post('/marcar/salida',{IDPrestacionPrestador: sessionStorage.loggedBusy.IDPrestacionPrestador}).then(function(response){
             if (response.success){
@@ -141,8 +217,9 @@ module.exports = class Patients extends React.Component {
         }.bind(this))
     }
 
-
-
+    handleObservacionChange(event){
+        this.setState({Observacion: event.target.value});
+    }
 
     get_prestaciones_list(){ 
         get('/prestaciones_paciente/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
@@ -154,40 +231,12 @@ module.exports = class Patients extends React.Component {
         }.bind(this))
     }
 
-    handleObservacionChange(event){
-        this.setState({Observacion: event.target.value});
-    }
-
     new_prestacion(){
         this.setState({
           show_new_prestacion: !this.state.show_new_prestacion,
         })
     }
 
-    save_orden(){
-        post('/ordenes_medicas',{'observacion':this.state.Observacion, 'idEnte': this.state.paciente.IdEnte}).then(
-            this.new_orden
-        ).catch(
-            this.setState({feedback: error, error: true})
-        )     
-    }
-
-    new_orden(){
-        this.setState({
-          show_new_orden: !this.state.show_new_orden,
-          Observacion:'',
-        })
-    }
-        
-    get_ordenes_list(){ 
-        get('/ordenes_medicas/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
-            if (response.success){
-                this.setState({ordenes_list: response.data});
-            } else {
-               this.setState({feedback: response.data});
-            }
-        }.bind(this))
-    }
 
     get_hoja_admision(){
         get('/hoja_admision/' + this.state.paciente.IDPrestacionPrestador).then(function(response){
@@ -315,42 +364,7 @@ module.exports = class Patients extends React.Component {
                     </Tab>
 
                     <Tab label="Órdenes" value="ordenes_medicas">
-                        { this.state.show_new_orden && (  
-                            <div>
-                               <RaisedButton label="Nueva Orden" onTouchTap={this.new_orden} fullWidth={true}/>    
-                                {
-                                    this.state.ordenes_list.map((v, i) => (
-                                        <div key={i}>
-                                            <Paper style={form_style} zDepth={2}>
-                                                <ShowOrdenes orden={v} />
-                                            </Paper>
-                                        </div>
-                                      )
-                                    )
-                                }
-                            </div>    
-                        )}
-                        { !this.state.show_new_orden && (
-                            <div>
-                                <CardText>
-                                    <TextField
-                                        id="id_Observacion" 
-                                        hintText="Nueva orden medica"
-                                        errorText="Campo Obligatorio."
-                                        floatingLabelText="Nueva orden medica"
-                                        value={this.state.Observacion} 
-                                        onChange={this.handleObservacionChange} 
-                                        fullWidth={true}
-                                        multiLine={true}
-                                        rows={2}
-                                    />
-                                </CardText>
-                                <CardActions>
-                                    <RaisedButton label="Guardar" onTouchTap={this.save_orden} />
-                                    <RaisedButton label="Cancelar" onTouchTap={this.new_orden} />
-                                </CardActions>
-                            </div>
-                        )}
+                        <Ordenes paciente={this.state.paciente} />
                     </Tab>
 
                     <Tab label="Insumos" value="insumos">

@@ -116,7 +116,7 @@ ReactDOM.render((
              <Route path='home' component={Home}/>
              <Route path='scan/:id' component={ScanTicket}/>
              <Route path='utiles' component={utiles}/>
-             <Route path='patients' component={patients}/>
+             <Route path='patients/:id' component={patients}/>
           </Route>
       </Router>
 ), document.getElementById("root"))

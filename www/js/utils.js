@@ -23,14 +23,14 @@ module.exports = {
         sessionStorage.user = "";
     },
 
-    locateFunction: function(id_funcion){
-        funciones = JSON.parse(sessionStorage.shows);
-        for (i = 0; i < funciones.length; i++) {  
-            if (funciones[i].id == id_funcion){
-                return funciones[i];
+    locatePatient: function(id_paciente){
+        pacientes = JSON.parse(sessionStorage.shows);
+        for (i = 0; i < pacientes.length; i++) {  
+            if (pacientes[i].id == id_paciente){
+                return pacientes[i];
             }
         }
-        throw Error("No se ha localizado la funcion "+ id_funcion);
+        throw Error("No se ha localizado la paciente "+ id_paciente);
     },
     post: function(url, body){
         options = {
