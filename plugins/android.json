@@ -7,19 +7,16 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.example.hello"
-        },
-        "cordova-plugin-QRCode": {
-            "PACKAGE_NAME": "com.example.hello"
-        },
         "com.phonegap.plugins.barcodescanner": {
-            "PACKAGE_NAME": "com.example.hello"
+            "PACKAGE_NAME": "com.softwerkla"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.softwerkla"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-compat": {
-            "PACKAGE_NAME": "com.example.hello"
+            "PACKAGE_NAME": "com.softwerkla"
         }
     }
 }

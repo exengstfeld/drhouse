@@ -7,14 +7,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-QRCode": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-qrcode"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "com.phonegap.plugins.barcodescanner": {
         "source": {
             "type": "git",
