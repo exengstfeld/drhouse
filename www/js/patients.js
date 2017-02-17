@@ -20,47 +20,95 @@ var post = require('../js/utils').post
 
 
 
+class Prestaciones extends React.Component{
+    constructor(props) {
+        super(props);
+        this.get_prestaciones_list = this.get_prestaciones_list.bind(this);
+        this.new_prestacion = this.new_prestacion.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this)
+        this.state = {
+            prestaciones_list:[]
+        }
+    }
 
-function Hoja_Admision(data){
-    var data_admision = data.data_admision
-    return (
-        <Card>
-            <CardText>
-                <h2 style={styles.headline}> <b> Hoja de admisión </b> </h2>      
-                <Divider/>      
+    componentDidMount(props){
+        if (isNotLoggedIn()){
+            browserHistory.push('/');
+        } else {
+        console.info(this.props)
+        this.get_prestaciones_list();
+        }
+    }
+
+    get_prestaciones_list(props){ 
+        get('/prestaciones_paciente/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
+            if (response.success){
+                this.setState({prestaciones_list: response.data});
+            } else {
+               this.setState({feedback: response.data});
+            }
+        }.bind(this))   
+    }
+
+    new_prestacion(){
+        this.setState({
+          show_new_prestacion: !this.state.show_new_prestacion,
+        })
+    }
+
+    render(){         
+        var view = (<span> Cargando vista </span>)
+        if (this.state.show_new_prestacion){
+            view=(
                 <div>
-                    <b>Fecha:</b> {data_admision.FecEmision}
-                </div><div>
-                    <b>Nro de Revision:</b> {data_admision.NroRevision}
-                </div><div>
-                    <b>Medicamentos:</b> {data_admision.DescReaccionesAdvMedicamentos}
-                </div><div>
-                    <b>Motivo de Internacion:</b> {data_admision.DescMotivoInternacion}
-                </div><div>
-                    <b>Enfermedad Actual:</b> {data_admision.DescEnfermedadActual}
-                </div><div>
-                    <b>Diagnostico de Ingreso:</b> {data_admision.DescDiagnosticoIngreso}
+                    <CardText>
+                        <TextField
+                            id="id_Observacion" 
+                            hintText="Prestacion realizada"
+                            errorText="Campo Obligatorio."
+                            floatingLabelText="Prestacion realizada"
+                            value={this.state.Observacion} 
+                            onChange={this.handleObservacionChange} 
+                            fullWidth={true}
+                            multiLine={true}
+                            rows={2}
+                        />
+                    </CardText>
+                    <CardActions>
+                        <RaisedButton label="Guardar" onTouchTap={this.new_prestacion} />
+                        <RaisedButton label="Cancelar" onTouchTap={this.new_prestacion} />
+                    </CardActions>
+                </div>
+            )
+        } else {
+            view = (
+                <div>   
+                    <RaisedButton label="Nueva Prestacion" onTouchTap={this.new_prestacion} fullWidth={true}/>
+                    {
+                        this.state.prestaciones_list.map((v, i) => (
+                            <div key={i}>
+                                <Paper style={form_style} zDepth={2}>
+                                <Card>
+                                    <CardText>
+                                        <div>
+                                           <b> {v.Descproducto} </b> ( {v.FecVisita} ) 
+                                        </div>
+                                        <div>
+                                            <i> {v.DescNovedad} </i>
+                                        </div>
+                                    </CardText>
+                                </Card>
+                                </Paper>
+                            </div>
+                          )
+                        )
+                    }
                 </div>   
-            </CardText>
-        </Card>
-    )
+            )
+        }
+        return(view)
+    }
 }
-
-function ShowPrestaciones(props){
-    return (          
-        <Card>
-            <CardText>
-                <div>
-                   <b> {props.prestacion.Descproducto} </b> ( {props.prestacion.FecVisita} ) 
-                </div>
-                <div>
-                    <i> {props.prestacion.DescNovedad} </i>
-                </div>
-            </CardText>
-        </Card>
-    )
-}
-
 
 class Ordenes extends React.Component {
     constructor(props) {
@@ -68,6 +116,7 @@ class Ordenes extends React.Component {
         this.handleObservacionChange = this.handleObservacionChange.bind(this)
         this.new_orden = this.new_orden.bind(this)
         this.save_orden = this.save_orden.bind(this)
+        this.componentDidMount = this.componentDidMount.bind(this)
 
         this.state = {
             show_new_orden: true,
@@ -115,7 +164,8 @@ class Ordenes extends React.Component {
     }
 
     render(){
-        var view = (<span>Cargando vista...</span>);
+        var view = (<span>Cargando vista...</span>)
+        
         if (this.state.show_new_orden){
             view = (
                 <div>
@@ -169,81 +219,106 @@ class Ordenes extends React.Component {
     }
 }
 
+class HojaAdmision extends React.Component {
+    constructor(props){
+        super(props);
+        this.get_hoja_admision = this.get_hoja_admision.bind(this)     
+        this.state = {
+            hoja_admision:{}
+        }    
+    }
+
+    componentDidMount(){
+        if (isNotLoggedIn()){
+            browserHistory.push('/');
+        } else {
+            this.get_hoja_admision();
+        }
+    }
+
+    get_hoja_admision(){
+        get('/hoja_admision/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
+            if (response.success){
+                this.setState({hoja_admision: response.data});
+            } else {
+               this.setState({feedback: response.data});
+            }
+        }.bind(this))
+    }
+
+    render(){
+        return(
+            <Card>
+                <CardText>
+                    <h2 style={styles.headline}> <b> Hoja de admisión </b> </h2>      
+                    <Divider/>      
+                    <div>
+                        <b>Fecha:</b> {this.state.hoja_admision.FecEmision}
+                    </div><div>
+                        <b>Nro de Revision:</b> {this.state.hoja_admision.NroRevision}
+                    </div><div>
+                        <b>Medicamentos:</b> {this.state.hoja_admision.DescReaccionesAdvMedicamentos}
+                    </div><div>
+                        <b>Motivo de Internacion:</b> {this.state.hoja_admision.DescMotivoInternacion}
+                    </div><div>
+                        <b>Enfermedad Actual:</b> {this.state.hoja_admision.DescEnfermedadActual}
+                    </div><div>
+                        <b>Diagnostico de Ingreso:</b> {this.state.hoja_admision.DescDiagnosticoIngreso}
+                    </div>   
+                </CardText>
+            </Card>
+        )
+    }
+}
+
 module.exports = class Patients extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.new_prestacion = this.new_prestacion.bind(this);
-        this.get_hoja_admision = this.get_hoja_admision.bind(this)
         this.marcar_salida = this.marcar_salida.bind(this)
-        this.show_accion = this.show_accion.bind(this)
+        this.marcar_entrada = this.marcar_entrada.bind(this)
+        this.componentDidMount = this.componentDidMount.bind(this)
+        this.showAccion = this.showAccion.bind(this)
 
         this.state = {
-            paciente: {},
             value:'prestaciones',
-            data_admision:{},
-            prestaciones_list:[{
-                "FecVisita":"21/08/1990",
-                "Descproducto":"Visita Tecnica",
-                "DescNovedad":"Sin cambios notables"
-                },{
-                "FecVisita":"15/10/1992",
-                "Descproducto":"Radiografia",
-                "DescNovedad":"Todos los huesos rotos, no safo ni uno,"
-                },{
-                "FecVisita":"05/10/1993",
-                "Descproducto":"No se como todavia sigue vivo, debe ser un milagro",
-                "DescNovedad":"Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. " 
-                },{
-                "FecVisita":"05/10/1993",
-                "Descproducto":"Visita de Control",
-                "DescNovedad":"No se como todavia sigue vivo, debe ser un milagro"
-                }]
+            show_accion: '',
+            paciente:{},
             }
         }
 
     componentDidMount(){
-        this.setState({paciente: JSON.parse(sessionStorage.shows)[this.props.params.id]})
+        if (isNotLoggedIn()){
+            browserHistory.push('/');
+        } else {
+            this.setState({paciente: JSON.parse(sessionStorage.shows)[this.props.params.id]});
+            this.showAccion(JSON.parse(sessionStorage.shows)[this.props.params.id])
+        }
+    }
+
+    marcar_entrada(){
+        post('/marcar/entrada', this.state.paciente ).then(function(response){
+            if (response.success){
+                console.info('marco Entrada')
+                sessionStorage.loggedBusy = JSON.stringify(this.state.paciente)
+                this.showAccion(this.state.paciente)
+            } else {
+                console.info('error Entrada')
+                this.setState({feedback: response.data} );
+            }
+        }.bind(this))
+
     }
 
     marcar_salida(){
-        post('/marcar/salida',{IDPrestacionPrestador: sessionStorage.loggedBusy.IDPrestacionPrestador}).then(function(response){
+        var busy = JSON.parse(sessionStorage.loggedBusy)
+        post('/marcar/salida',{IDPrestacionPrestador: busy.IDPrestacionPrestador}).then(function(response){
             if (response.success){
                 sessionStorage.loggedBusy = null;
+                this.state.show_accion = ''
                 browserHistory.push('/home');
             } else {
-                this.setState({feedback: response.data});
-            }
-        }.bind(this))
-    }
-
-    handleObservacionChange(event){
-        this.setState({Observacion: event.target.value});
-    }
-
-    get_prestaciones_list(){ 
-        get('/prestaciones_paciente/'+this.state.paciente.IDPrestacionPrestador).then(function(response){
-            if (response.success){
-                this.setState({prestaciones_list: response.data});
-            } else {
-               this.setState({feedback: response.data});
-            }
-        }.bind(this))
-    }
-
-    new_prestacion(){
-        this.setState({
-          show_new_prestacion: !this.state.show_new_prestacion,
-        })
-    }
-
-
-    get_hoja_admision(){
-        get('/hoja_admision/' + this.state.paciente.IDPrestacionPrestador).then(function(response){
-            if (response.success){
-                this.setState({shows: response.data});
-            } else {
-               this.setState({feedback: response.data});
+                this.setState({feedback: response.data} );
             }
         }.bind(this))
     }
@@ -257,49 +332,54 @@ module.exports = class Patients extends React.Component {
         })
     }
 
-    show_accion(){
-        console.info('show_accion')
-        if(sessionStorage.loggedBusy != null && 
-            sessionStorage.loggedBusy.IDPrestacionPrestador != sessionStorage.Atendiendo.IDPrestacionPrestador){
-            console.info('bussy')
-            return 'bussy'
+    goBussy(){
+
+    }
+
+    showAccion(props){
+        var show_accion = ""
+        var busy = JSON.parse(sessionStorage.loggedBusy)
+
+        if(busy != null && 
+            busy.IDPrestacionPrestador != props.IDPrestacionPrestador){
+            show_accion = 'bussy'
         }
 
-        if(sessionStorage.loggedBusy != null && 
-            sessionStorage.loggedBusy.IDPrestacionPrestador == sessionStorage.Atendiendo.IDPrestacionPrestador){                    
-            console.info('marcar_salida')
-            return 'marcar_salida'
+        if(busy != null && 
+            busy.IDPrestacionPrestador == props.IDPrestacionPrestador){                    
+            show_accion = 'marcar_salida'
         }
-        if(sessionStorage.loggedBusy == null){
-            console.info('marcar_entrada')
-            return 'marcar_entrada'
+        if(busy == null){
+            show_accion = 'marcar_entrada'
         }
+
+        this.setState({show_accion: show_accion})
     }
 
 
     render(){
         return(
             <div>
-                { this.show_accion == 'bussy' && (
+                { this.state.show_accion == 'bussy' && (
                     (<RaisedButton 
-                        label = 'nombre_busy'
+                        label = {<b>En: {JSON.parse(sessionStorage.loggedBusy).BuscarComo}</b>}
                         onTouchTap={this.goPatients} 
-                        fullWidth={true}/>
-                    )
+                        fullWidth={true}
+                    />)
                 )}
-                { this.show_accion == 'marcar_salida' && (
+                { this.state.show_accion == 'marcar_salida' && (
                     (<RaisedButton 
                         label="Marcar Salida" 
                         onTouchTap={this.marcar_salida} 
-                        fullWidth={true}/>
-                    )        
+                        fullWidth={true}
+                    />)        
                 )}
-                { this.show_accion == 'marcar_entrada' && (
+                { this.state.show_accion == 'marcar_entrada' && (
                     (<RaisedButton 
                         label="Marcar Entrada" 
-                        onTouchTap={this.goPatients} 
-                        fullWidth={true}/>
-                    )
+                        onTouchTap={this.marcar_entrada} 
+                        fullWidth={true}
+                    />)
                 )}
                 
                 <Card>
@@ -319,57 +399,18 @@ module.exports = class Patients extends React.Component {
                         </div>   
                     </CardText>
                 </Card>
-                <Tabs
-                    value={this.state.value}                    
-                    onChange={this.handleChange}
-                  >
+                <Tabs value={this.state.value} onChange={this.handleChange} >
                     <Tab label="Prestaciones" value="prestaciones" >
-                        { this.state.show_new_prestacion && (  
-                            <div>   
-                                <RaisedButton label="Nueva Prestacion" onTouchTap={this.new_prestacion} fullWidth={true}/>
-                                {
-                                    this.state.prestaciones_list.map((v, i) => (
-                                        <div key={i}>
-                                            <Paper style={form_style} zDepth={2}>
-                                                <ShowPrestaciones prestacion={v} />
-                                            </Paper>
-                                        </div>
-                                      )
-                                    )
-                                }
-                            </div>    
-                        )}
-                        { !this.state.show_new_prestacion && (
-                            <div>
-                                <CardText>
-                                    <TextField
-                                        id="id_Observacion" 
-                                        hintText="Prestacion realizada"
-                                        errorText="Campo Obligatorio."
-                                        floatingLabelText="Prestacion realizada"
-                                        value={this.state.Observacion} 
-                                        onChange={this.handleObservacionChange} 
-                                        fullWidth={true}
-                                        multiLine={true}
-                                        rows={2}
-                                    />
-                                </CardText>
-                                <CardActions>
-                                    <RaisedButton label="Guardar" onTouchTap={this.new_prestacion} />
-                                    <RaisedButton label="Cancelar" onTouchTap={this.new_prestacion} />
-                                </CardActions>
-                            </div>
-                        )}
-
+                        <Prestaciones paciente= {(this.state.paciente)} />
                     </Tab>
 
                     <Tab label="Órdenes" value="ordenes_medicas">
-                        <Ordenes paciente={this.state.paciente} />
+                        <Ordenes paciente= {this.state.paciente} />
                     </Tab>
 
                     <Tab label="Insumos" value="insumos">
                       <div>
-                        <RaisedButton label="Cargar Insumos" onTouchTap={this.goPatients} fullWidth={true}/>
+                            <RaisedButton label="Cargar Insumos" onTouchTap={this.goPatients} fullWidth={true}/>
                             <h2 style={styles.headline}> <b> UPSS </b> </h2>      
                       </div>
                     </Tab>
@@ -378,7 +419,7 @@ module.exports = class Patients extends React.Component {
                         <Paper style={form_style} zDepth={2}>
                             {
                                 <div>
-                                    <Hoja_Admision data_admision = {this.state.data_admision} />
+                                    <HojaAdmision paciente={this.state.paciente} />
                                     <Divider/>
                                 </div>
                             }
