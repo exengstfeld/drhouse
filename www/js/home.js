@@ -27,49 +27,16 @@ function getPriorizationIcon(_status){
     return avatar_path
 }
 
-function ShowCard(props){
-    var avatar_path = ""
-
-    return (          
-        <Card>
-            <CardHeader
-                avatar = {avatar_path}
-                title= {props.show.BuscarComo} 
-                subtitle= {<div>{props.show.DescProducto} ({props.show.HoraDesde} - {props.show.HoraHasta})</div>}
-                actAsExpander={true}
-                showExpandableButton={true}
-            />
-            <CardText expandable={true}>
-                <div>
-                    <b> Horario: </b> {props.show.HoraDesde} - {props.show.HoraHasta}.
-                </div><div>
-                    <b> Telefono: </b> {props.show.Telefono1}.
-                </div><div>
-                    <b> Direccion: </b> {props.show.Domicilio}.
-                </div>   
-            </CardText>
-            <CardActions>
-                {props.action}
-            </CardActions>
-        </Card>
-    )
-}
-
 module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
-        this.goPatients = this.goPatients.bind(this);
         this.refresh = this.refresh.bind(this);
         this.state = {
             shows: [],
             expanded: false,
         };
     }
-    
-    goPatients(event, paciente){
-        sessionStorage.Atendiendo = JSON.stringify(paciente)
-    };
-    
+        
     refresh(event){
         sessionStorage.shows = "";
         this.loadFunctions()

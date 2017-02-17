@@ -43,7 +43,7 @@ module.exports = class Login extends React.Component {
         if (response.success){
             sessionStorage.loggedIn = this.state.username;
             sessionStorage.loggedToken = response.data.token;
-            sessionStorage.loggedBusy = response.data.busy;
+            sessionStorage.loggedBusy = JSON.stringify(response.data.busy);
             sessionStorage.user = JSON.stringify(response.data);
             browserHistory.push('/home');
         } else {
