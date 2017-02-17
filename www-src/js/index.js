@@ -24,6 +24,7 @@ var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var app_bar_style = require('../js/config').app_bar_style 
 var app_bar_strong_style = require('../js/config').app_bar_strong_style
 
+require('es6-promise').polyfill();
 injectTapEventPlugin();
 
 class App extends React.Component {

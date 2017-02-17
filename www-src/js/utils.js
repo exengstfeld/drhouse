@@ -1,6 +1,8 @@
 var api_base_url = require('../js/config').api_base_url
+var fetch = require('isomorphic-fetch')
 
-call = function(url, options){
+
+var call = function(url, options){
     return fetch(api_base_url + url, options).then((response) => {
         if (response.status == 200) {
             return response.json()
@@ -24,7 +26,7 @@ module.exports = {
     },
 
     locatePatient: function(id_paciente){
-        pacientes = JSON.parse(sessionStorage.shows);
+        var pacientes = JSON.parse(sessionStorage.shows);
         for (i = 0; i < pacientes.length; i++) {  
             if (pacientes[i].id == id_paciente){
                 return pacientes[i];
@@ -33,7 +35,7 @@ module.exports = {
         throw Error("No se ha localizado la paciente "+ id_paciente);
     },
     post: function(url, body){
-        options = {
+        var options = {
             "method": "POST",
             "headers":{
                 "Content-Type": "application/json",
@@ -44,7 +46,7 @@ module.exports = {
         return call(url, options);    
     },
     get: function(url){
-        options = {
+        var options = {
             "method": "GET",
             "headers":{
                 "session-token": sessionStorage.loggedToken
