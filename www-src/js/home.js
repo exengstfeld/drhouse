@@ -14,7 +14,7 @@ var Divider = require('material-ui').Divider
 // var Notification = require('../js/common').Notification
 
 function getPriorizationIcon(_status){
-    avatar_path = ""
+    var avatar_path = ""
     if (_status == 1){
         avatar_path = "img/danger.png"
     }             
