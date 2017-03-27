@@ -14,6 +14,7 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-es2015": "^6.22.0",
     "isomorphic-fetch": "^2.2.1",
+    "react-pull-to-refresh": "^1.0.6",
     "es6-promise": "^4.0.5"
   },
   "devDependencies": {},
