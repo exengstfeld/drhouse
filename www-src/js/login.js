@@ -73,7 +73,6 @@ module.exports = class Login extends React.Component {
                  <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                  <Card>
                    <CardMedia>
-                     <img src="img/softwerk.png" />
                    </CardMedia>
                    <CardTitle title="Login" subtitle="Acceda con sus credenciales" />
                    <CardText>

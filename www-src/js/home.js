@@ -7,34 +7,19 @@ var form_style = require('../js/config').form_style
 var locateFunction = require ('../js/utils').locateFunction 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var get = require('../js/utils').get
-
+var AppBar = require('material-ui').AppBar
+var getPriorizationIcon = require('../js/utils').getPriorizationIcon
 var RaisedButton = require('material-ui').RaisedButton
 var TextField = require('material-ui').TextField
 var Divider = require('material-ui').Divider
 var ReactPullToRefresh = require('react-pull-to-refresh')
 // var Notification = require('../js/common').Notification
-
-function getPriorizationIcon(_status){
-    var avatar_path = ""
-    if (_status == 1){
-        avatar_path = "img/danger.png"
-    }             
-    if (_status == 2){
-        avatar_path = "img/ok.png"
-    }             
-    if (_status == 3){
-        avatar_path = "img/alert.png"
-    }   
-    return avatar_path
-}
-
 module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
         this.handleRefresh = this.handleRefresh.bind(this);
         this.state = {
-            shows: [],
-            expanded: false,
+            shows: []
         };
     }
         
@@ -77,40 +62,32 @@ module.exports = class Home extends React.Component {
     render(){
         return(
             <div>
+                <AppBar
+                    title={"Orden del día"}
+                />
                 <ReactPullToRefresh onRefresh={this.handleRefresh}>
-                    <Paper style={form_style} zDepth={2}>
-                        {
-                            this.state.shows.map((v, i) => (
-                                <div key={i}>
-
-                                    <Card>
-                                        <CardHeader
-                                            avatar = {getPriorizationIcon(v.status)}
-                                            title= {v.BuscarComo} 
-                                            subtitle= {<div>{v.DescProducto} ({v.HoraDesde} - {v.HoraHasta})</div>}
-                                            actAsExpander={true}
-                                            showExpandableButton={true}
-                                        />
-                                        <CardText expandable={true}>
-                                            <div>
-                                                <b> Horario: </b> {v.HoraDesde} - {v.HoraHasta}.
-                                            </div><div>
-                                                <b> Telefono: </b> {v.Telefono1}.
-                                            </div><div>
-                                                <b> Direccion: </b> {v.Domicilio}.
-                                            </div>   
-                                        </CardText>
-                                        <CardActions>
-                                            <FlatButton href={"index.html#/patients/" + i} label="Detalle" />
-                                        </CardActions>
-                                    </Card>
-                                    <br/>
-                                    <Divider/>
-                                </div>
-                              )
-                            )
-                        }
-                    </Paper>
+                    {
+                        this.state.shows.map((v, i) => (
+                            <div key={i}>
+                                <Card>
+                                    <CardHeader
+                                        avatar = {getPriorizationIcon(v.status)}
+                                        title= {v.BuscarComo} 
+                                        subtitle= {<div>{v.DescProducto} ({v.HoraDesde} - {v.HoraHasta})</div>}
+                                    />
+                                    <CardText>
+                                        <p><b> Horario: </b> {v.HoraDesde} - {v.HoraHasta}.</p>
+                                        <p><b> Telefono: </b> {v.Telefono1}.</p>
+                                        <p><b> Direccion: </b> {v.Domicilio}.</p>
+                                    </CardText>
+                                    <CardActions>
+                                        <FlatButton href={"index.html#/patients/" + i} label="Detalle" />
+                                    </CardActions>
+                                </Card>
+                            </div>
+                          )
+                        )
+                    }
                 </ReactPullToRefresh>
             </div>
        )

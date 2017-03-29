@@ -25,6 +25,20 @@ module.exports = {
         sessionStorage.user = "";
     },
 
+    getPriorizationIcon: function(_status){
+        var avatar_path = ""
+        if (_status == 1){
+            avatar_path = "img/danger.png"
+        }             
+        if (_status == 2){
+            avatar_path = "img/ok.png"
+        }             
+        if (_status == 3){
+            avatar_path = "img/alert.png"
+        }   
+        return avatar_path
+    },
+
     locatePatient: function(id_paciente){
         var pacientes = JSON.parse(sessionStorage.shows);
         for (i = 0; i < pacientes.length; i++) {  

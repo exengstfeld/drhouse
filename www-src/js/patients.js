@@ -8,7 +8,9 @@ var locateFunction = require ('../js/utils').locateFunction
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var input_style = require('../js/config').input_style
 var TextField = require('material-ui').TextField
-    
+var AppBar = require('material-ui').AppBar
+var IconButton = require('material-ui').IconButton
+var NavigationClose = require('material-ui/svg-icons/navigation/close').default
 var RaisedButton = require('material-ui').RaisedButton
 var styles = require('../js/config').styles_tabs 
 var Divider = require('material-ui').Divider
@@ -17,96 +19,107 @@ var closeActiveSession = require('../js/utils').closeActiveSession
 var app_bar_style = require('../js/config').app_bar_style 
 var get = require('../js/utils').get
 var post = require('../js/utils').post
-
+var getPriorizationIcon = require('../js/utils').getPriorizationIcon
+var FloatingActionButton = require('material-ui').FloatingActionButton
+var ContentAdd = require('material-ui/svg-icons/content/add').default
+var PlayForWork = require('material-ui/svg-icons/action/play-for-work').default
+var Done = require('material-ui/svg-icons/action/done').default
+var Dialog = require('material-ui').Dialog
 
 
 class Prestaciones extends React.Component{
     constructor(props) {
         super(props);
-        this.get_prestaciones_list = this.get_prestaciones_list.bind(this);
-        this.new_prestacion = this.new_prestacion.bind(this);
-        this.componentDidMount = this.componentDidMount.bind(this)
+        this.getPrestaciones = this.getPrestaciones.bind(this);
+        this.newPrestacion = this.newPrestacion.bind(this);
+        this.savePrestacion = this.savePrestacion.bind(this);
+        this.handleDialogClose = this.handleDialogClose.bind(this)
         this.state = {
-            prestaciones_list:[]
+            show_new_prestacion: false,
+            feedback: "",
+            error: false,
+            prestaciones: []
         }
     }
 
-    componentDidMount(props){
+    componentDidMount(){
         if (isNotLoggedIn()){
             browserHistory.push('/');
         } else {
-        console.info(this.props)
-        this.get_prestaciones_list();
+            this.getPrestaciones();
         }
     }
 
-    get_prestaciones_list(props){ 
+    getPrestaciones(){ 
         get('/prestaciones_paciente/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
-                this.setState({prestaciones_list: response.data});
+                this.setState({prestaciones: response.data});
             } else {
-               this.setState({feedback: response.data});
+               this.setState({feedback: response.data, error: true});
             }
         }.bind(this))   
     }
 
-    new_prestacion(){
+    handleDialogClose(){
+        this.setState({show_new_prestacion: false, observacion: ""})
+    }
+
+    newPrestacion(){
         this.setState({
-          show_new_prestacion: !this.state.show_new_prestacion,
+          show_new_prestacion: true,
+        })
+    }
+
+    savePrestacion(){
+        this.setState({
+            feedback: "Se ha guardado la prestación con éxito!", 
+            error: false
         })
     }
 
     render(){         
-        var view = (<span> Cargando vista </span>)
-        if (this.state.show_new_prestacion){
-            view=(
-                <div>
-                    <CardText>
-                        <TextField
-                            id="id_Observacion" 
-                            hintText="Prestacion realizada"
-                            errorText="Campo Obligatorio."
-                            floatingLabelText="Prestacion realizada"
-                            value={this.state.Observacion} 
-                            onChange={this.handleObservacionChange} 
-                            fullWidth={true}
-                            multiLine={true}
-                            rows={2}
-                        />
-                    </CardText>
-                    <CardActions>
-                        <RaisedButton label="Guardar" onTouchTap={this.new_prestacion} />
-                        <RaisedButton label="Cancelar" onTouchTap={this.new_prestacion} />
-                    </CardActions>
-                </div>
-            )
-        } else {
-            view = (
-                <div>   
-                    <RaisedButton label="Nueva Prestacion" onTouchTap={this.new_prestacion} fullWidth={true}/>
-                    {
-                        this.state.prestaciones_list.map((v, i) => (
-                            <div key={i}>
-                                <Paper style={form_style} zDepth={2}>
-                                <Card>
-                                    <CardText>
-                                        <div>
-                                           <b> {v.Descproducto} </b> ( {v.FecVisita} ) 
-                                        </div>
-                                        <div>
-                                            <i> {v.DescNovedad} </i>
-                                        </div>
-                                    </CardText>
-                                </Card>
-                                </Paper>
-                            </div>
-                          )
-                        )
-                    }
-                </div>   
-            )
-        }
-        return(view)
+        return (
+            <span>   
+                <FloatingActionButton disabled={this.props.can_operate} onTouchTap={this.newPrestacion} style={{bottom: 30, display: "inline-block", right: 15}}>
+                    <ContentAdd />
+                </FloatingActionButton>
+                {
+                    this.state.prestaciones.map((v, i) => (
+                        <div key={i}>
+                            <Card>
+                                <CardText>
+                                    <p><b> {v.Descproducto} </b> ( {v.FecVisita} )</p>
+                                    <p>{v.DescNovedad}</p>
+                                </CardText>
+                            </Card>
+                        </div>
+                      )
+                    )
+                }
+                <Dialog
+                  title="Nueva prestación"
+                  actions={[
+                      <RaisedButton label="Guardar" onTouchTap={this.savePrestacion} />,
+                  ]}
+                  modal={false}
+                  open={this.state.show_new_prestacion}
+                  onRequestClose={this.handleDialogClose}
+                >
+                    Por favor, ingrese una nueva prestación
+                    <TextField
+                        id="id_Observacion" 
+                        hintText="Prestacion realizada"
+                        errorText="Campo Obligatorio."
+                        floatingLabelText="Prestacion realizada"
+                        value={this.state.observacion} 
+                        onChange={this.handleObservacionChange} 
+                        fullWidth={true}
+                        multiLine={true}
+                        rows={2}
+                    />
+                </Dialog>
+            </span>   
+        )
     }
 }
 
@@ -114,14 +127,16 @@ class Ordenes extends React.Component {
     constructor(props) {
         super(props);
         this.handleObservacionChange = this.handleObservacionChange.bind(this)
-        this.new_orden = this.new_orden.bind(this)
-        this.save_orden = this.save_orden.bind(this)
-        this.componentDidMount = this.componentDidMount.bind(this)
+        this.newOrden = this.newOrden.bind(this)
+        this.handleDialogClose = this.handleDialogClose.bind(this)
+        this.saveOrden = this.saveOrden.bind(this)
+        this.getOrdenes = this.getOrdenes.bind(this)
 
         this.state = {
-            show_new_orden: true,
-            ordenes_list: [],
+            show_new_orden: false,
+            ordenes: [],
             feedback: "",
+            error: false,
             observacion: ""
         }    
     }
@@ -130,99 +145,94 @@ class Ordenes extends React.Component {
         if (isNotLoggedIn()){
             browserHistory.push('/');
         } else {
-            this.get_ordenes_list();
+            this.setState({
+                paciente: this.props.paciente
+            });
+            this.getOrdenes();
         }
     }
 
-    save_orden(){
-        post('/ordenes_medicas', {'observacion':this.state.observacion, 'idEnte': this.props.paciente.IdEnte}).then(
-            this.new_orden
+    saveOrden(){
+        post('/ordenes_medicas', {'observacion':this.state.observacion, 'idEnte': this.state.paciente.IdEnte}).then(
+            this.setState({feedback: "Se ha grabado una nueva orden con exito!", error: false})
         ).catch(
             this.setState({feedback: error, error: true})
         )     
     }
 
     handleObservacionChange(event){
-        this.setState({Observacion: event.target.value});
+        this.setState({observacion: event.target.value});
     }
 
-    new_orden(){
-        this.setState({
-          show_new_orden: !this.state.show_new_orden,
-          Observacion: '',
-        })
+    newOrden(){
+        this.setState({show_new_orden: true})
     }
-        
-    get_ordenes_list(){ 
+    
+    handleDialogClose(){
+        this.setState({show_new_orden: false, observacion: ""})
+    }
+
+    getOrdenes(){ 
         get('/ordenes_medicas/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
-                this.setState({ordenes_list: response.data});
+                this.setState({ordenes: response.data});
             } else {
-                this.setState({feedback: response.data});
+                this.setState({feedback: response.data, error: true});
             }
         }.bind(this))
     }
 
     render(){
-        var view = (<span>Cargando vista...</span>)
-        
-        if (this.state.show_new_orden){
-            view = (
-                <div>
-                   <RaisedButton label="Nueva Orden" onTouchTap={this.new_orden} fullWidth={true}/>    
-                    {
-                        this.state.ordenes_list.map((v, i) => (
-                            <div key={i}>
-                                <Paper style={form_style} zDepth={2}>
-                                    <Card>
-                                        <CardText>
-                                            <div>
-                                               <b> {v.BuscarComo} </b> ( {v.FecEmision} ) 
-                                            </div>
-                                            <div>
-                                                <i> {v.OBSOrdenMedica} </i>
-                                            </div>
-                                        </CardText>
-                                    </Card>
-                                </Paper>
-                            </div>
-                          )
-                        )
-                    }
-                </div>    
-            )
-        } else {
-            view = (
-                <div>
-                    <CardText>
-                        <TextField
-                            id="id_Observacion" 
-                            hintText="Nueva orden medica"
-                            errorText="Campo Obligatorio."
-                            floatingLabelText="Nueva orden medica"
-                            value={this.state.Observacion} 
-                            onChange={this.handleObservacionChange} 
-                            fullWidth={true}
-                            multiLine={true}
-                            rows={2}
-                        />
-                    </CardText>
-                    <CardActions>
-                        <RaisedButton label="Guardar" onTouchTap={this.save_orden} />
-                        <RaisedButton label="Cancelar" onTouchTap={this.new_orden} />
-                    </CardActions>
-                </div>
-            )
-        }
-
-        return (view)
+        return (
+            <span>
+                <FloatingActionButton disabled={this.props.can_operate} onTouchTap={this.newOrden} style={{bottom: 30, display: "inline-block", left: 15}}>
+                    <ContentAdd />
+                </FloatingActionButton>
+                {
+                    this.state.ordenes.map((v, i) => (
+                        <div key={i}>
+                            <Card>
+                                <CardText>
+                                   <p><b> {v.BuscarComo} </b> ( {v.FecEmision} )</p>
+                                   <p>{v.OBSOrdenMedica}</p>
+                                </CardText>
+                            </Card>
+                        </div>
+                      )
+                    )
+                }
+                <Dialog
+                  title="Nueva órden"
+                  actions={[
+                      <RaisedButton label="Guardar" onTouchTap={this.saveOrden} />,
+                  ]}
+                  modal={false}
+                  open={this.state.show_new_orden}
+                  onRequestClose={this.handleDialogClose}
+                >
+                    Por favor, ingrese una nueva orden médica
+                    <TextField
+                        id="id_observacion" 
+                        hintText="Nueva orden medica"
+                        errorText="Campo Obligatorio."
+                        floatingLabelText="Nueva orden medica"
+                        value={this.state.observacion} 
+                        onChange={this.handleObservacionChange} 
+                        fullWidth={true}
+                        multiLine={true}
+                        rows={2}
+                    />
+                  
+                </Dialog>
+            </span>    
+        )
     }
 }
 
 class HojaAdmision extends React.Component {
     constructor(props){
         super(props);
-        this.get_hoja_admision = this.get_hoja_admision.bind(this)     
+        this.getHojaAdmision = this.getHojaAdmision.bind(this)     
         this.state = {
             hoja_admision:{}
         }    
@@ -232,14 +242,14 @@ class HojaAdmision extends React.Component {
         if (isNotLoggedIn()){
             browserHistory.push('/');
         } else {
-            this.get_hoja_admision();
+            this.getHojaAdmision();
         }
     }
 
-    get_hoja_admision(){
+    getHojaAdmision(){
         get('/hoja_admision/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
-                this.setState({hoja_admision: response.data});
+               this.setState({hoja_admision: response.data});
             } else {
                this.setState({feedback: response.data});
             }
@@ -250,21 +260,12 @@ class HojaAdmision extends React.Component {
         return(
             <Card>
                 <CardText>
-                    <h2 style={styles.headline}> <b> Hoja de admisión </b> </h2>      
-                    <Divider/>      
-                    <div>
-                        <b>Fecha:</b> {this.state.hoja_admision.FecEmision}
-                    </div><div>
-                        <b>Nro de Revision:</b> {this.state.hoja_admision.NroRevision}
-                    </div><div>
-                        <b>Medicamentos:</b> {this.state.hoja_admision.DescReaccionesAdvMedicamentos}
-                    </div><div>
-                        <b>Motivo de Internacion:</b> {this.state.hoja_admision.DescMotivoInternacion}
-                    </div><div>
-                        <b>Enfermedad Actual:</b> {this.state.hoja_admision.DescEnfermedadActual}
-                    </div><div>
-                        <b>Diagnostico de Ingreso:</b> {this.state.hoja_admision.DescDiagnosticoIngreso}
-                    </div>   
+                    <p><b>Fecha:</b> {this.state.hoja_admision.FecEmision}</p>
+                    <p><b>Nro de Revision:</b> {this.state.hoja_admision.NroRevision}</p>
+                    <p><b>Medicamentos:</b> {this.state.hoja_admision.DescReaccionesAdvMedicamentos}</p>
+                    <p><b>Motivo de Internacion:</b> {this.state.hoja_admision.DescMotivoInternacion}</p>
+                    <p><b>Enfermedad Actual:</b> {this.state.hoja_admision.DescEnfermedadActual}</p>
+                    <p><b>Diagnostico de Ingreso:</b> {this.state.hoja_admision.DescDiagnosticoIngreso}</p>
                 </CardText>
             </Card>
         )
@@ -277,45 +278,41 @@ module.exports = class Patients extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.marcar_salida = this.marcar_salida.bind(this)
         this.marcar_entrada = this.marcar_entrada.bind(this)
-        this.componentDidMount = this.componentDidMount.bind(this)
-        this.showAccion = this.showAccion.bind(this)
 
         this.state = {
-            value:'prestaciones',
-            show_accion: '',
-            paciente:{},
-            }
+            value:'detalles',
+            busy: null,
+            paciente:{}
         }
+    }
 
     componentDidMount(){
         if (isNotLoggedIn()){
             browserHistory.push('/');
         } else {
-            this.setState({paciente: JSON.parse(sessionStorage.shows)[this.props.params.id]});
-            this.showAccion(JSON.parse(sessionStorage.shows)[this.props.params.id])
+            this.setState({
+                paciente: JSON.parse(sessionStorage.shows)[this.props.params.id], 
+                busy: JSON.parse(sessionStorage.loggedBusy)
+            });
         }
     }
 
     marcar_entrada(){
-        post('/marcar/entrada', this.state.paciente ).then(function(response){
+        post('/marcar/entrada', this.state.paciente).then(function(response){
             if (response.success){
-                console.info('marco Entrada')
-                sessionStorage.loggedBusy = JSON.stringify(this.state.paciente)
-                this.showAccion(this.state.paciente)
+                this.setState({busy: JSON.stringify(this.state.paciente)});
+                sessionStorage.loggedBusy = JSON.stringify(this.state.paciente);
             } else {
-                console.info('error Entrada')
-                this.setState({feedback: response.data} );
+                this.setState({feedback: response.data});
             }
         }.bind(this))
 
     }
 
     marcar_salida(){
-        var busy = JSON.parse(sessionStorage.loggedBusy)
-        post('/marcar/salida',{IDPrestacionPrestador: busy.IDPrestacionPrestador}).then(function(response){
+        post('/marcar/salida', {IDPrestacionPrestador: this.state.busy.IDPrestacionPrestador}).then(function(response){
             if (response.success){
                 sessionStorage.loggedBusy = null;
-                this.state.show_accion = ''
                 browserHistory.push('/home');
             } else {
                 this.setState({feedback: response.data} );
@@ -325,109 +322,72 @@ module.exports = class Patients extends React.Component {
 
     handleChange(value){
         this.setState({
-          value: value,
-          show_new_prestacion:true,
-          show_new_orden:true,
-          Observacion:'',
+          value: value
         })
     }
 
-    goBussy(){
-
-    }
-
-    showAccion(props){
-        var show_accion = ""
-        var busy = JSON.parse(sessionStorage.loggedBusy)
-
-        if(busy != null && 
-            busy.IDPrestacionPrestador != props.IDPrestacionPrestador){
-            show_accion = 'bussy'
-        }
-
-        if(busy != null && 
-            busy.IDPrestacionPrestador == props.IDPrestacionPrestador){                    
-            show_accion = 'marcar_salida'
-        }
-        if(busy == null){
-            show_accion = 'marcar_entrada'
-        }
-
-        this.setState({show_accion: show_accion})
-    }
-
-
     render(){
+        var rightAction = undefined
+        if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador != this.state.paciente.IDPrestacionPrestador)) {
+            rightAction = (
+                <FlatButton onTouchTap={browserHistory.goBack} label={"Ir a paciente actual"}>
+                </FlatButton>
+            )
+        } else if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)) {
+            rightAction = (
+                <FlatButton onTouchTap={this.marcar_salida} label={"Marcar Salida"}>
+                </FlatButton>
+            )
+        } else if (this.state.busy == null) {
+            rightAction = (
+                <FlatButton onTouchTap={this.marcar_entrada} label={"Marcar Entrada"}>   
+                </FlatButton>
+            )
+        }
         return(
-            <div>
-                { this.state.show_accion == 'bussy' && (
-                    (<RaisedButton 
-                        label = {<b>En: {JSON.parse(sessionStorage.loggedBusy).BuscarComo}</b>}
-                        onTouchTap={this.goPatients} 
-                        fullWidth={true}
-                    />)
-                )}
-                { this.state.show_accion == 'marcar_salida' && (
-                    (<RaisedButton 
-                        label="Marcar Salida" 
-                        onTouchTap={this.marcar_salida} 
-                        fullWidth={true}
-                    />)        
-                )}
-                { this.state.show_accion == 'marcar_entrada' && (
-                    (<RaisedButton 
-                        label="Marcar Entrada" 
-                        onTouchTap={this.marcar_entrada} 
-                        fullWidth={true}
-                    />)
-                )}
-                
-                <Card>
-                    <CardHeader
-                        title= {this.state.paciente.BuscarComo} 
-                        subtitle= {<div>{this.state.paciente.DescProducto} ({this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta})</div>}
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                    />
-                    <CardText expandable={true}>
-                        <div>
-                            <b> Horario: </b> {this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta}.
-                        </div><div>
-                            <b> Telefono: </b> {this.state.paciente.Telefono1}.
-                        </div><div>
-                            <b> Direccion: </b> {this.state.paciente.Domicilio}.
-                        </div>   
-                    </CardText>
-                </Card>
+            <span>
+                <AppBar
+                    title={"Paciente"}
+                    iconElementLeft={<IconButton onTouchTap={browserHistory.goBack}><NavigationClose /></IconButton>}
+                    iconElementRight={rightAction}
+                />
                 <Tabs value={this.state.value} onChange={this.handleChange} >
+                    <Tab label="Detalles" value="detalles">
+                        <Card>
+                            <CardHeader
+                                avatar = {getPriorizationIcon(this.state.paciente.status)}
+                                title= {this.state.paciente.BuscarComo} 
+                                subtitle= {<span>{this.state.paciente.DescProducto} ({this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta})</span>}
+                            />
+                            <CardText>
+                                <div>
+                                    <p><strong>Nombre: </strong> {this.state.paciente.BuscarComo}</p>
+                                    <p><strong>Descripción: </strong>{this.state.paciente.DescProducto}</p>
+                                    <p><strong>Horario: </strong> {this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta}.</p>
+                                    <p><strong>Telefono: </strong> {this.state.paciente.Telefono1}.</p>
+                                    <p><strong>Direccion: </strong> {this.state.paciente.Domicilio}.</p>
+                                </div>   
+                            </CardText>
+                        </Card>
+                    </Tab>
+
                     <Tab label="Prestaciones" value="prestaciones" >
-                        <Prestaciones paciente= {(this.state.paciente)} />
+                        <Prestaciones paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)} />
                     </Tab>
 
                     <Tab label="Órdenes" value="ordenes_medicas">
-                        <Ordenes paciente= {this.state.paciente} />
+                        <Ordenes paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)} />
                     </Tab>
 
                     <Tab label="Insumos" value="insumos">
-                      <div>
-                            <RaisedButton label="Cargar Insumos" onTouchTap={this.goPatients} fullWidth={true}/>
-                            <h2 style={styles.headline}> <b> UPSS </b> </h2>      
-                      </div>
+                        <p>No hay insumos que mostrar</p>
                     </Tab>
 
                     <Tab label="Admisión" value="tab_hoja_admision">
-                        <Paper style={form_style} zDepth={2}>
-                            {
-                                <div>
-                                    <HojaAdmision paciente={this.state.paciente} />
-                                    <Divider/>
-                                </div>
-                            }
-                        </Paper>
+                        <HojaAdmision paciente={this.state.paciente} />
                     </Tab>
-
                   </Tabs>                 
-            </div>
+            </span>
        )
     }
 }
