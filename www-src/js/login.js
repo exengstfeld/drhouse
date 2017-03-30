@@ -2,7 +2,10 @@ var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var Divider = require('material-ui').Divider
 var TextField = require('material-ui').TextField
+var AppBar = require('material-ui').AppBar
 var RaisedButton = require('material-ui').RaisedButton
+var Dialog = require('material-ui').Dialog
+var FlatButton = require('material-ui').FlatButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var Notification = require('../js/common').Notification
 var input_style = require('../js/config').input_style
@@ -15,6 +18,8 @@ module.exports = class Login extends React.Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleDialogClose = this.handleDialogClose.bind(this);
+        this.openLogin = this.openLogin.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.processLoginError= this.processLoginError.bind(this);
@@ -23,7 +28,8 @@ module.exports = class Login extends React.Component {
             feedback: "",
             error: false,
             username: "",
-            password: ""
+            password: "",
+            show_login: false
         };
     }
     
@@ -67,23 +73,46 @@ module.exports = class Login extends React.Component {
         )     
     }
 
+    handleDialogClose(){
+        this.setState({show_login: false, username: "", password: ""})
+    }
+
+    openLogin(){
+        this.setState({
+          show_login: true,
+        })
+    }
+
     render(){
         return ( 
             <div>
+                <AppBar
+                    title={"Dr. House App"}
+                    iconElementRight={
+                        <FlatButton label="Acceder" onTouchTap={this.openLogin} />
+                    }
+                />
                  <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                  <Card>
-                   <CardMedia>
-                   </CardMedia>
-                   <CardTitle title="Login" subtitle="Acceda con sus credenciales" />
+                   <CardTitle title="Bienvenido" subtitle="Descubra más acerca de Dr. House App" />
                    <CardText>
-                     <TextField style={input_style} underlineShow={false} floatingLabelText="Usuario" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
-                     <Divider />
-                     <TextField style={input_style} underlineShow={false} floatingLabelText="Contraseña" id="password-field" value={this.state.password} type="password" onChange={this.handlePasswordChange} />
+                       <p><strong>Dr. House App</strong> Es una aplicación diseñada para optimizar los trabajos de internación domiciliaria. Permite llevar un tracking de la prestación realizada, cargar insumos, consultar la hoja de admisión y detectar el momento de entrada y salida al momento de realizar la prestación verificando y validando la geolocalización</p>
                    </CardText>
-                   <CardActions>
-                     <RaisedButton label="Login" onTouchTap={this.handleSubmit} fullWidth={true}/>
-                   </CardActions>
                  </Card>
+                    <Dialog
+                      title="Login"
+                      actions={[
+                          <RaisedButton label="Acceder" onTouchTap={this.handleSubmit} />,
+                      ]}
+                      modal={false}
+                      open={this.state.show_login}
+                      onRequestClose={this.handleDialogClose}
+                    >
+                        Por favor, ingrese con sus credenciales habituales
+                         <TextField style={input_style} underlineShow={false} floatingLabelText="Usuario" id="username-field" value={this.state.username} onChange={this.handleUsernameChange} />
+                         <Divider />
+                         <TextField style={input_style} underlineShow={false} floatingLabelText="Contraseña" id="password-field" value={this.state.password} type="password" onChange={this.handlePasswordChange} />
+                    </Dialog>
             </div>
         )
     }

@@ -11,6 +11,11 @@ var TextField = require('material-ui').TextField
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var NavigationClose = require('material-ui/svg-icons/navigation/close').default
+
+var Subheader = require('material-ui').Subheader;
+var List = require('material-ui/List').List;
+var ListItem = require('material-ui/List').ListItem;
+
 var RaisedButton = require('material-ui').RaisedButton
 var styles = require('../js/config').styles_tabs 
 var Divider = require('material-ui').Divider
@@ -23,6 +28,11 @@ var getPriorizationIcon = require('../js/utils').getPriorizationIcon
 var FloatingActionButton = require('material-ui').FloatingActionButton
 var ContentAdd = require('material-ui/svg-icons/content/add').default
 var PlayForWork = require('material-ui/svg-icons/action/play-for-work').default
+var Create = require('material-ui/svg-icons/content/create').default
+var Description = require('material-ui/svg-icons/action/description').default
+var Reorder = require('material-ui/svg-icons/action/reorder').default
+var Assignment = require('material-ui/svg-icons/action/assignment').default
+var Toys = require('material-ui/svg-icons/hardware/toys').default
 var Done = require('material-ui/svg-icons/action/done').default
 var Dialog = require('material-ui').Dialog
 
@@ -80,7 +90,7 @@ class Prestaciones extends React.Component{
     render(){         
         return (
             <span>   
-                <FloatingActionButton disabled={this.props.can_operate} onTouchTap={this.newPrestacion} style={{bottom: 30, display: "inline-block", right: 15}}>
+                <FloatingActionButton onTouchTap={this.newPrestacion} disabled={!this.props.can_operate} style={{bottom: 30, display: this.props.can_operate ? "block" : "none", right: 15, position: "fixed"}}>
                     <ContentAdd />
                 </FloatingActionButton>
                 {
@@ -185,7 +195,7 @@ class Ordenes extends React.Component {
     render(){
         return (
             <span>
-                <FloatingActionButton disabled={this.props.can_operate} onTouchTap={this.newOrden} style={{bottom: 30, display: "inline-block", left: 15}}>
+                <FloatingActionButton onTouchTap={this.newOrden} disabled={!this.props.can_operate} style={{bottom: 30, display: this.props.can_operate ? "block" : "none", right: 15, position: "fixed"}}>
                     <ContentAdd />
                 </FloatingActionButton>
                 {
@@ -300,7 +310,7 @@ module.exports = class Patients extends React.Component {
     marcar_entrada(){
         post('/marcar/entrada', this.state.paciente).then(function(response){
             if (response.success){
-                this.setState({busy: JSON.stringify(this.state.paciente)});
+                this.setState({busy: this.state.paciente});
                 sessionStorage.loggedBusy = JSON.stringify(this.state.paciente);
             } else {
                 this.setState({feedback: response.data});
@@ -313,6 +323,7 @@ module.exports = class Patients extends React.Component {
         post('/marcar/salida', {IDPrestacionPrestador: this.state.busy.IDPrestacionPrestador}).then(function(response){
             if (response.success){
                 sessionStorage.loggedBusy = null;
+                this.setState({busy: null});
                 browserHistory.push('/home');
             } else {
                 this.setState({feedback: response.data} );
@@ -347,23 +358,23 @@ module.exports = class Patients extends React.Component {
         return(
             <span>
                 <AppBar
-                    title={"Paciente"}
+                    title={this.state.paciente.BuscarComo}
                     iconElementLeft={<IconButton onTouchTap={browserHistory.goBack}><NavigationClose /></IconButton>}
                     iconElementRight={rightAction}
                 />
                 <Tabs value={this.state.value} onChange={this.handleChange} >
-                    <Tab label="Detalles" value="detalles">
+                    <Tab icon={<Assignment />} value="detalles">
                         <Card>
                             <CardHeader
-                                avatar = {getPriorizationIcon(this.state.paciente.status)}
-                                title= {this.state.paciente.BuscarComo} 
-                                subtitle= {<span>{this.state.paciente.DescProducto} ({this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta})</span>}
+                                avatar={getPriorizationIcon(this.state.paciente.status)}
+                                title={this.state.paciente.BuscarComo} 
+                                subtitle={<span>{this.state.paciente.DescProducto} ({this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta})</span>}
                             />
                             <CardText>
                                 <div>
                                     <p><strong>Nombre: </strong> {this.state.paciente.BuscarComo}</p>
                                     <p><strong>Descripción: </strong>{this.state.paciente.DescProducto}</p>
-                                    <p><strong>Horario: </strong> {this.state.paciente.HoraDesde} - {this.state.paciente.HoraHasta}.</p>
+                                    <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
                                     <p><strong>Telefono: </strong> {this.state.paciente.Telefono1}.</p>
                                     <p><strong>Direccion: </strong> {this.state.paciente.Domicilio}.</p>
                                 </div>   
@@ -371,19 +382,19 @@ module.exports = class Patients extends React.Component {
                         </Card>
                     </Tab>
 
-                    <Tab label="Prestaciones" value="prestaciones" >
-                        <Prestaciones paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)} />
+                    <Tab icon={<Create />} value="prestaciones" >
+                        <Prestaciones paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador) && (this.state.value == "prestaciones")} />
                     </Tab>
 
-                    <Tab label="Órdenes" value="ordenes_medicas">
-                        <Ordenes paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)} />
+                    <Tab icon={<Reorder />} value="ordenes_medicas">
+                        <Ordenes paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador) && (this.state.value == "ordenes_medicas")} />
                     </Tab>
 
-                    <Tab label="Insumos" value="insumos">
+                    <Tab icon={<Toys />} value="insumos">
                         <p>No hay insumos que mostrar</p>
                     </Tab>
 
-                    <Tab label="Admisión" value="tab_hoja_admision">
+                    <Tab icon={<Description />} value="tab_hoja_admision">
                         <HojaAdmision paciente={this.state.paciente} />
                     </Tab>
                   </Tabs>                 

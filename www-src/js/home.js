@@ -7,6 +7,12 @@ var form_style = require('../js/config').form_style
 var locateFunction = require ('../js/utils').locateFunction 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var get = require('../js/utils').get
+
+var List = require('material-ui/List').List;
+var ListItem = require('material-ui/List').ListItem;
+var Subheader = require('material-ui').Subheader;
+var Avatar = require('material-ui').Avatar;
+
 var AppBar = require('material-ui').AppBar
 var getPriorizationIcon = require('../js/utils').getPriorizationIcon
 var RaisedButton = require('material-ui').RaisedButton
@@ -63,31 +69,29 @@ module.exports = class Home extends React.Component {
         return(
             <div>
                 <AppBar
-                    title={"Orden del día"}
+                    title={"Bandeja de entrada"}
                 />
                 <ReactPullToRefresh onRefresh={this.handleRefresh}>
+                    <List>
+                        <Subheader>Hoy</Subheader>
                     {
                         this.state.shows.map((v, i) => (
-                            <div key={i}>
-                                <Card>
-                                    <CardHeader
-                                        avatar = {getPriorizationIcon(v.status)}
-                                        title= {v.BuscarComo} 
-                                        subtitle= {<div>{v.DescProducto} ({v.HoraDesde} - {v.HoraHasta})</div>}
-                                    />
-                                    <CardText>
-                                        <p><b> Horario: </b> {v.HoraDesde} - {v.HoraHasta}.</p>
-                                        <p><b> Telefono: </b> {v.Telefono1}.</p>
-                                        <p><b> Direccion: </b> {v.Domicilio}.</p>
-                                    </CardText>
-                                    <CardActions>
-                                        <FlatButton href={"index.html#/patients/" + i} label="Detalle" />
-                                    </CardActions>
-                                </Card>
-                            </div>
+                            <span key={i}>
+                                <ListItem
+                                  leftAvatar={<Avatar src={getPriorizationIcon(v.status)} />}
+                                  primaryText={v.BuscarComo} 
+                                  secondaryText={
+                                      <p>{v.DescProducto}. Desde las {v.HoraDesde}hs hasta las {v.HoraHasta}hs</p>
+                                  }
+                                  secondaryTextLines={2}
+                                  href={"index.html#/patients/" + i}
+                                />
+                                <Divider inset={true} />
+                            </span>
                           )
                         )
                     }
+                    </List>
                 </ReactPullToRefresh>
             </div>
        )
