@@ -320,7 +320,8 @@ module.exports = class Patients extends React.Component {
     }
 
     marcar_salida(){
-        post('/marcar/salida', {IDPrestacionPrestador: this.state.busy.IDPrestacionPrestador}).then(function(response){
+        post('/marcar/salida', {paciente: this.state.paciente, 
+                                observacion: 'observacion, de salida'}).then(function(response){
             if (response.success){
                 sessionStorage.loggedBusy = null;
                 this.setState({busy: null});

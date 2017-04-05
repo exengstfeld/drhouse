@@ -81,7 +81,10 @@ module.exports = class Home extends React.Component {
                                   leftAvatar={<Avatar src={getPriorizationIcon(v.status)} />}
                                   primaryText={v.BuscarComo} 
                                   secondaryText={
-                                      <p>{v.DescProducto}. Desde las {v.HoraDesde}hs hasta las {v.HoraHasta}hs</p>
+                                      <p>
+                                        Desde las {v.HoraDesde} hs hasta las {v.HoraHasta} hs.
+                                        {v.DescProducto}.
+                                      </p>
                                   }
                                   secondaryTextLines={2}
                                   href={"index.html#/patients/" + i}
