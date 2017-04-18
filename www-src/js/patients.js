@@ -41,14 +41,12 @@ class Prestaciones extends React.Component{
     constructor(props) {
         super(props);
         this.getPrestaciones = this.getPrestaciones.bind(this);
-        this.newPrestacion = this.newPrestacion.bind(this);
-        this.savePrestacion = this.savePrestacion.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this)
         this.state = {
             show_new_prestacion: false,
             feedback: "",
             error: false,
-            prestaciones: []
+            prestaciones: [],
         }
     }
 
@@ -61,6 +59,8 @@ class Prestaciones extends React.Component{
     }
 
     getPrestaciones(){ 
+        console.info(this)
+        console.info(this.keys())
         get('/prestaciones_paciente/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
                 this.setState({prestaciones: response.data});
@@ -74,19 +74,8 @@ class Prestaciones extends React.Component{
         this.setState({show_new_prestacion: false, observacion: ""})
     }
 
-    newPrestacion(){
-        this.setState({
-          show_new_prestacion: true,
-        })
-    }
 
-    savePrestacion(){
-        this.setState({
-            feedback: "Se ha guardado la prestación con éxito!", 
-            error: false
-        })
-    }
-
+ 
     render(){         
         return (
             <span>   
@@ -106,178 +95,8 @@ class Prestaciones extends React.Component{
                       )
                     )
                 }
-                <Dialog
-                  title="Nueva prestación"
-                  actions={[
-                      <RaisedButton label="Guardar" onTouchTap={this.savePrestacion} />,
-                  ]}
-                  modal={false}
-                  open={this.state.show_new_prestacion}
-                  onRequestClose={this.handleDialogClose}
-                >
-                    Por favor, ingrese una nueva prestación
-                    <TextField
-                        id="id_Observacion" 
-                        hintText="Prestacion realizada"
-                        errorText="Campo Obligatorio."
-                        floatingLabelText="Prestacion realizada"
-                        value={this.state.observacion} 
-                        onChange={this.handleObservacionChange} 
-                        fullWidth={true}
-                        multiLine={true}
-                        rows={2}
-                    />
-                </Dialog>
+
             </span>   
-        )
-    }
-}
-
-class Ordenes extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleObservacionChange = this.handleObservacionChange.bind(this)
-        this.newOrden = this.newOrden.bind(this)
-        this.handleDialogClose = this.handleDialogClose.bind(this)
-        this.saveOrden = this.saveOrden.bind(this)
-        this.getOrdenes = this.getOrdenes.bind(this)
-
-        this.state = {
-            show_new_orden: false,
-            ordenes: [],
-            feedback: "",
-            error: false,
-            observacion: ""
-        }    
-    }
-
-    componentDidMount(){
-        if (isNotLoggedIn()){
-            browserHistory.push('/');
-        } else {
-            this.setState({
-                paciente: this.props.paciente
-            });
-            this.getOrdenes();
-        }
-    }
-
-    saveOrden(){
-        post('/ordenes_medicas', {'observacion':this.state.observacion, 'idEnte': this.state.paciente.IdEnte}).then(
-            this.setState({feedback: "Se ha grabado una nueva orden con exito!", error: false})
-        ).catch(
-            this.setState({feedback: error, error: true})
-        )     
-    }
-
-    handleObservacionChange(event){
-        this.setState({observacion: event.target.value});
-    }
-
-    newOrden(){
-        this.setState({show_new_orden: true})
-    }
-    
-    handleDialogClose(){
-        this.setState({show_new_orden: false, observacion: ""})
-    }
-
-    getOrdenes(){ 
-        get('/ordenes_medicas/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
-            if (response.success){
-                this.setState({ordenes: response.data});
-            } else {
-                this.setState({feedback: response.data, error: true});
-            }
-        }.bind(this))
-    }
-
-    render(){
-        return (
-            <span>
-                <FloatingActionButton onTouchTap={this.newOrden} disabled={!this.props.can_operate} style={{bottom: 30, display: this.props.can_operate ? "block" : "none", right: 15, position: "fixed"}}>
-                    <ContentAdd />
-                </FloatingActionButton>
-                {
-                    this.state.ordenes.map((v, i) => (
-                        <div key={i}>
-                            <Card>
-                                <CardText>
-                                   <p><b> {v.BuscarComo} </b> ( {v.FecEmision} )</p>
-                                   <p>{v.OBSOrdenMedica}</p>
-                                </CardText>
-                            </Card>
-                        </div>
-                      )
-                    )
-                }
-                <Dialog
-                  title="Nueva órden"
-                  actions={[
-                      <RaisedButton label="Guardar" onTouchTap={this.saveOrden} />,
-                  ]}
-                  modal={false}
-                  open={this.state.show_new_orden}
-                  onRequestClose={this.handleDialogClose}
-                >
-                    Por favor, ingrese una nueva orden médica
-                    <TextField
-                        id="id_observacion" 
-                        hintText="Nueva orden medica"
-                        errorText="Campo Obligatorio."
-                        floatingLabelText="Nueva orden medica"
-                        value={this.state.observacion} 
-                        onChange={this.handleObservacionChange} 
-                        fullWidth={true}
-                        multiLine={true}
-                        rows={2}
-                    />
-                  
-                </Dialog>
-            </span>    
-        )
-    }
-}
-
-class HojaAdmision extends React.Component {
-    constructor(props){
-        super(props);
-        this.getHojaAdmision = this.getHojaAdmision.bind(this)     
-        this.state = {
-            hoja_admision:{}
-        }    
-    }
-
-    componentDidMount(){
-        if (isNotLoggedIn()){
-            browserHistory.push('/');
-        } else {
-            this.getHojaAdmision();
-        }
-    }
-
-    getHojaAdmision(){
-        get('/hoja_admision/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
-            if (response.success){
-               this.setState({hoja_admision: response.data});
-            } else {
-               this.setState({feedback: response.data});
-            }
-        }.bind(this))
-    }
-
-    render(){
-        return(
-            <Card>
-                <CardText>
-                    <p><b>Fecha:</b> {this.state.hoja_admision.FecEmision}</p>
-                    <p><b>Nro de Revision:</b> {this.state.hoja_admision.NroRevision}</p>
-                    <p><b>Medicamentos:</b> {this.state.hoja_admision.DescReaccionesAdvMedicamentos}</p>
-                    <p><b>Motivo de Internacion:</b> {this.state.hoja_admision.DescMotivoInternacion}</p>
-                    <p><b>Enfermedad Actual:</b> {this.state.hoja_admision.DescEnfermedadActual}</p>
-                    <p><b>Diagnostico de Ingreso:</b> {this.state.hoja_admision.DescDiagnosticoIngreso}</p>
-                </CardText>
-            </Card>
         )
     }
 }
@@ -373,12 +192,12 @@ module.exports = class Patients extends React.Component {
                             />
                             <CardText>
                                 <div>
-                                    <p><strong>Nombre: </strong> {this.state.paciente.BuscarComo}</p>
-                                    <p><strong>Descripción: </strong>{this.state.paciente.DescProducto}</p>
+                                    <p><strong>Nombre: </strong> {this.state.paciente.BuscarComo} ({this.state.paciente.EDAD} año)</p>
+                                    <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
+                                    <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
                                     <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
                                     <p><strong>Telefono: </strong> {this.state.paciente.Telefono1}.</p>
-                                    <p><strong>Direccion: </strong> {this.state.paciente.Domicilio}.</p>
-                                </div>   
+                                    <p><strong>Direccion: </strong> {this.state.paciente.Domicilio}.</p>                                </div>   
                             </CardText>
                         </Card>
                     </Tab>
@@ -387,17 +206,6 @@ module.exports = class Patients extends React.Component {
                         <Prestaciones paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador) && (this.state.value == "prestaciones")} />
                     </Tab>
 
-                    <Tab icon={<Reorder />} value="ordenes_medicas">
-                        <Ordenes paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador) && (this.state.value == "ordenes_medicas")} />
-                    </Tab>
-
-                    <Tab icon={<Toys />} value="insumos">
-                        <p>No hay insumos que mostrar</p>
-                    </Tab>
-
-                    <Tab icon={<Description />} value="tab_hoja_admision">
-                        <HojaAdmision paciente={this.state.paciente} />
-                    </Tab>
                   </Tabs>                 
             </span>
        )

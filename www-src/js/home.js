@@ -78,13 +78,12 @@ module.exports = class Home extends React.Component {
                         this.state.shows.map((v, i) => (
                             <span key={i}>
                                 <ListItem
-                                  leftAvatar={<Avatar src={getPriorizationIcon(v.status)} />}
-                                  primaryText={v.BuscarComo} 
-                                  secondaryText={
-                                      <p>
-                                        Desde las {v.HoraDesde} hs hasta las {v.HoraHasta} hs.
-                                        {v.DescProducto}.
-                                      </p>
+                                    leftAvatar={<Avatar src={getPriorizationIcon(v.status)} />}
+                                    primaryText={v.BuscarComo} 
+                                    secondaryText={
+                                        <p>
+                                            {v.DescProducto} ({v.HoraDesde} - {v.HoraHasta} hs)   
+                                        </p>
                                   }
                                   secondaryTextLines={2}
                                   href={"index.html#/patients/" + i}
