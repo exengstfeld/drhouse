@@ -68,7 +68,7 @@ class Prestaciones extends React.Component{
     }
 
     getPrestaciones(){
-        get('/prestaciones_paciente/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
+        get('/prestaciones_paciente/' + this.props.paciente.IdEnte).then(function(response){
             if (response.success){
                 this.setState({prestaciones: response.data});
             } else {
@@ -89,8 +89,8 @@ class Prestaciones extends React.Component{
                         <div key={i}>
                             <Card>
                                 <CardText>
-                                    <p><b> {v.Descproducto} </b> ( {v.FecVisita} )</p>
-                                    <p>{v.DescNovedad}</p>
+                                    <p><b> {v.DescProducto} </b> ( {v.Fecha} )</p>
+                                    <p>{v.Observaciones}</p>
                                 </CardText>
                             </Card>
                         </div>

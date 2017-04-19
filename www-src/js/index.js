@@ -17,6 +17,7 @@ var ScanTicket = require('../js/eticket')
 var Home = require('../js/home')
 var validar_entrada = require('../js/validar_entrada')
 var utiles = require('../js/datosutiles')
+var historial = require('../js/prestador_historial')
 var patients = require('../js/patients')
 var darkBaseTheme = require('../js/config').darkBaseTheme
 var lightBaseTheme = require('material-ui/styles/baseThemes/lightBaseTheme')
@@ -36,6 +37,7 @@ class App extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.goHome = this.goHome.bind(this);
         this.goUtiles = this.goUtiles.bind(this);
+        this.goPrestadorHistorial = this.goPrestadorHistorial.bind(this);
         // this.refresh = this.refresh.bind(this);
         this.state = {
             open: false
@@ -67,6 +69,11 @@ class App extends React.Component {
         browserHistory.push("/utiles");
     }
     
+    goPrestadorHistorial(event){
+        this.handleClose();
+        sessionStorage.prestaciones = "";
+        browserHistory.push("/historial");
+    }
     render(){
         return(
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
@@ -90,6 +97,8 @@ class App extends React.Component {
                         <Divider/>
                         <MenuItem onTouchTap={this.goHome} primaryText="Listado del Dia" />
                         <Divider/>
+                        <MenuItem onTouchTap={this.goPrestadorHistorial} primaryText="Prestaciones" />
+                        <Divider/>
                         <MenuItem onTouchTap={this.goUtiles} primaryText="Datos útiles" />
                         <Divider/>
                         <MenuItem onTouchTap={this.signOut} primaryText="Cerrar Sesión" />
@@ -111,6 +120,7 @@ ReactDOM.render((
              <Route path='home' component={Home}/>
              <Route path='scan/:id' component={ScanTicket}/>
              <Route path='utiles' component={utiles}/>
+             <Route path='historial' component={historial}/>
              <Route path='patients/:id' component={patients}/>
              <Route path='validar_entrada/:id' component={validar_entrada}/>
           </Route>
