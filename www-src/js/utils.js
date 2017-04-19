@@ -41,8 +41,8 @@ module.exports = {
 
     locatePatient: function(id_paciente){
         var pacientes = JSON.parse(sessionStorage.shows);
-        for (i = 0; i < pacientes.length; i++) {  
-            if (pacientes[i].id == id_paciente){
+        for (var i = 0; i < pacientes.length; i++) {  
+            if (pacientes[i].IDPrestacionPrestador == id_paciente){
                 return pacientes[i];
             }
         }

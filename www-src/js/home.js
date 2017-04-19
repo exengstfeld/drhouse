@@ -4,7 +4,7 @@ var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('m
 var Paper = require('material-ui').Paper
 var FlatButton = require('material-ui').FlatButton
 var form_style = require('../js/config').form_style
-var locateFunction = require ('../js/utils').locateFunction 
+var locatePatient = require ('../js/utils').locatePatient 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var get = require('../js/utils').get
 
@@ -86,7 +86,7 @@ module.exports = class Home extends React.Component {
                                         </p>
                                   }
                                   secondaryTextLines={2}
-                                  href={"index.html#/patients/" + i}
+                                  href={"index.html#/patients/" + v.IDPrestacionPrestador}
                                 />
                                 <Divider inset={true} />
                             </span>

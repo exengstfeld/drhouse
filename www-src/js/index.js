@@ -15,6 +15,7 @@ var injectTapEventPlugin = require('react-tap-event-plugin')
 var Login = require('../js/login')
 var ScanTicket = require('../js/eticket')
 var Home = require('../js/home')
+var validar_entrada = require('../js/validar_entrada')
 var utiles = require('../js/datosutiles')
 var patients = require('../js/patients')
 var darkBaseTheme = require('../js/config').darkBaseTheme
@@ -111,6 +112,7 @@ ReactDOM.render((
              <Route path='scan/:id' component={ScanTicket}/>
              <Route path='utiles' component={utiles}/>
              <Route path='patients/:id' component={patients}/>
+             <Route path='validar_entrada/:id' component={validar_entrada}/>
           </Route>
       </Router>
 ), document.getElementById("root"))

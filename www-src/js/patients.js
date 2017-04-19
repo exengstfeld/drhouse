@@ -4,7 +4,7 @@ var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('m
 var Paper = require('material-ui').Paper
 var FlatButton = require('material-ui').FlatButton
 var form_style = require('../js/config').form_style
-var locateFunction = require ('../js/utils').locateFunction 
+var locatePatient = require ('../js/utils').locatePatient 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var input_style = require('../js/config').input_style
 var TextField = require('material-ui').TextField
@@ -36,12 +36,21 @@ var Toys = require('material-ui/svg-icons/hardware/toys').default
 var Done = require('material-ui/svg-icons/action/done').default
 var Dialog = require('material-ui').Dialog
 
+const local_styles = {
+    floating: {
+        bottom: 30,
+        right: 30,
+        position: "fixed",
+        display: "block"
+    }
+}
+
 
 class Prestaciones extends React.Component{
     constructor(props) {
         super(props);
-        this.getPrestaciones = this.getPrestaciones.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this)
+        this.getPrestaciones = this.getPrestaciones.bind(this)
         this.state = {
             show_new_prestacion: false,
             feedback: "",
@@ -58,9 +67,7 @@ class Prestaciones extends React.Component{
         }
     }
 
-    getPrestaciones(){ 
-        console.info(this)
-        console.info(this.keys())
+    getPrestaciones(){
         get('/prestaciones_paciente/' + this.props.paciente.IDPrestacionPrestador).then(function(response){
             if (response.success){
                 this.setState({prestaciones: response.data});
@@ -73,15 +80,10 @@ class Prestaciones extends React.Component{
     handleDialogClose(){
         this.setState({show_new_prestacion: false, observacion: ""})
     }
-
-
  
     render(){         
         return (
             <span>   
-                <FloatingActionButton onTouchTap={this.newPrestacion} disabled={!this.props.can_operate} style={{bottom: 30, display: this.props.can_operate ? "block" : "none", right: 15, position: "fixed"}}>
-                    <ContentAdd />
-                </FloatingActionButton>
                 {
                     this.state.prestaciones.map((v, i) => (
                         <div key={i}>
@@ -106,41 +108,28 @@ module.exports = class Patients extends React.Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.marcar_salida = this.marcar_salida.bind(this)
-        this.marcar_entrada = this.marcar_entrada.bind(this)
+        this.openMarcarSalida = this.openMarcarSalida.bind(this)
+        this.handleObservacionesChange = this.handleObservacionesChange.bind(this);
 
         this.state = {
-            value:'detalles',
-            busy: null,
-            paciente:{}
+            value:'Detalles',
+            busy: JSON.parse(sessionStorage.loggedBusy),
+            paciente: locatePatient(props.params.id),
+            observaciones: "",
+            show_observaciones_salida: false
         }
     }
 
     componentDidMount(){
         if (isNotLoggedIn()){
             browserHistory.push('/');
-        } else {
-            this.setState({
-                paciente: JSON.parse(sessionStorage.shows)[this.props.params.id], 
-                busy: JSON.parse(sessionStorage.loggedBusy)
-            });
         }
     }
 
-    marcar_entrada(){
-        post('/marcar/entrada', this.state.paciente).then(function(response){
-            if (response.success){
-                this.setState({busy: this.state.paciente});
-                sessionStorage.loggedBusy = JSON.stringify(this.state.paciente);
-            } else {
-                this.setState({feedback: response.data});
-            }
-        }.bind(this))
-
-    }
 
     marcar_salida(){
         post('/marcar/salida', {paciente: this.state.paciente, 
-                                observacion: 'observacion, de salida'}).then(function(response){
+                                observacion: this.state.observaciones}).then(function(response){
             if (response.success){
                 sessionStorage.loggedBusy = null;
                 this.setState({busy: null});
@@ -156,34 +145,52 @@ module.exports = class Patients extends React.Component {
           value: value
         })
     }
+    handleObservacionesChange(event){
+        this.setState({
+          observaciones: event.target.value
+        })
+    }
+
+    openMarcarSalida(){
+        this.setState({show_observaciones_salida: true})
+    }
+
+    handleDialogClose(){
+        this.setState({
+          show_observaciones_salida: false
+        })
+    }
 
     render(){
         var rightAction = undefined
         if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador != this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FlatButton onTouchTap={browserHistory.goBack} label={"Ir a paciente actual"}>
-                </FlatButton>
+                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} style={local_styles.floating}>
+                    Ir a
+                </FloatingActionButton >
             )
         } else if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FlatButton onTouchTap={this.marcar_salida} label={"Marcar Salida"}>
-                </FlatButton>
+                <FloatingActionButton onTouchTap={this.openMarcarSalida} style={local_styles.floating}>
+                    Salir
+                </FloatingActionButton>
             )
         } else if (this.state.busy == null) {
             rightAction = (
-                <FlatButton onTouchTap={this.marcar_entrada} label={"Marcar Entrada"}>   
-                </FlatButton>
+                <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={local_styles.floating}>
+                    Entrar
+                </FloatingActionButton>
             )
         }
         return(
             <span>
                 <AppBar
-                    title={this.state.paciente.BuscarComo}
-                    iconElementLeft={<IconButton onTouchTap={browserHistory.goBack}><NavigationClose /></IconButton>}
-                    iconElementRight={rightAction}
+                    title={this.state.value}
+                    iconElementLeft={<IconButton onTouchTap={() => browserHistory.push("/home")}><NavigationClose /></IconButton>}
                 />
+                {rightAction}
                 <Tabs value={this.state.value} onChange={this.handleChange} >
-                    <Tab icon={<Assignment />} value="detalles">
+                    <Tab icon={<Assignment />} value="Detalles">
                         <Card>
                             <CardHeader
                                 avatar={getPriorizationIcon(this.state.paciente.status)}
@@ -202,11 +209,35 @@ module.exports = class Patients extends React.Component {
                         </Card>
                     </Tab>
 
-                    <Tab icon={<Create />} value="prestaciones" >
-                        <Prestaciones paciente={this.state.paciente} can_operate={(this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador) && (this.state.value == "prestaciones")} />
+                    <Tab icon={<Create />} value="Prestaciones" >
+                        <Prestaciones paciente={this.state.paciente} />
                     </Tab>
 
                   </Tabs>                 
+
+                  <Dialog
+                      title="Marcar salida"
+                      actions={[
+                          <RaisedButton label="Marcar salida" onTouchTap={this.marcar_salida} />,
+                      ]}
+                    modal={false}
+                    open={this.state.show_observaciones_salida}
+                    onRequestClose={this.handleDialogClose}
+                  >
+                      Por favor, ingrese las observaciones del paciente
+                      <TextField
+                          id="id_observacion"
+                          hintText="Prestacion realizada"
+                          errorText="Campo Obligatorio."
+                          floatingLabelText="Prestacion realizada"
+                          value={this.state.observaciones}
+                        onChange={this.handleObservacionesChange}
+                        fullWidth={true}
+                        multiLine={true}
+                        rows={2}
+                    />
+                  </Dialog>
+
             </span>
        )
     }
