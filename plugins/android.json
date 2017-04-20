@@ -12,6 +12,9 @@
         },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.softwerkla"
+        },
+        "call-number": {
+            "PACKAGE_NAME": "com.softwerkla"
         }
     },
     "dependent_plugins": {

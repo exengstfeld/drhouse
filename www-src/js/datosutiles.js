@@ -37,13 +37,13 @@ module.exports = class DatosUtiles extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            Datos_Utiles: []
+            datos_utiles: []
         }
     }
 
     componentDidMount(){
-        if (sessionStorage.Datos_Utiles.length > 0){
-            this.setState({Datos_Utiles: JSON.parse(sessionStorage.Datos_Utiles)});
+        if (sessionStorage.datos_utiles != undefined && sessionStorage.datos_utiles.length > 0){
+            this.setState({datos_utiles: JSON.parse(sessionStorage.datos_utiles)});
         } else {
             this.loadData()
         }
@@ -51,8 +51,8 @@ module.exports = class DatosUtiles extends React.Component {
     loadData(){ 
         get('/datos_utiles').then(function(response){
             if (response.success){
-                this.setState({Datos_Utiles: response.data});
-                sessionStorage.Datos_Utiles = JSON.stringify(response.data);
+                this.setState({datos_utiles: response.data});
+                sessionStorage.datos_utiles = JSON.stringify(response.data);
             } else {
                this.setState({feedback: response.data});
             }
@@ -67,7 +67,7 @@ module.exports = class DatosUtiles extends React.Component {
 
                 <Paper style={form_style} zDepth={2}>
                     {
-                        this.state.Datos_Utiles.map((v, i) => (
+                        this.state.datos_utiles.map((v, i) => (
                             <div key={i}>
                                 <ShowCard show={v} />
                                 <br/>

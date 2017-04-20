@@ -40,12 +40,13 @@ module.exports = class DatosUtiles extends React.Component {
     }
 
     componentDidMount(){
-        if (sessionStorage.prestaciones.length > 0){
+        if (sessionStorage.prestaciones != undefined && sessionStorage.prestaciones.length > 0){
             this.setState({prestaciones: JSON.parse(sessionStorage.prestacionesx)});
         } else {
             this.loadData()
         }
     }
+
     loadData(){ 
         get('/prestaciones_historial').then(function(response){
             if (response.success){
@@ -56,6 +57,7 @@ module.exports = class DatosUtiles extends React.Component {
             }
         }.bind(this))
     }
+
     render(){
         return(
             <div>
