@@ -7,35 +7,41 @@ var TextField = require('material-ui').TextField
 var RaisedButton = require('material-ui').RaisedButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var Notification = require('../js/common').Notification
-var input_style = require('../js/config').input_style
 var closeActiveSession = require('../js/utils').closeActiveSession
 var get = require('../js/utils').get
 
+var AppBar = require('material-ui').AppBar
+var IconButton = require('material-ui').IconButton
+var NavigationClose = require('material-ui/svg-icons/navigation/close').default
+
+var {lightBlue50, lightBlue100} = require('material-ui/styles/colors')
+
 
 function ShowCard(props){
-    return (          
-        <Card>
-            <CardHeader
-                title= {props.show.BuscarComo} 
-                subtitle= {<div>{props.show.DescProducto}</div>}
-                actAsExpander={true}
-                showExpandableButton={true}
-            />
-            <CardText expandable={true}>
-                <div>
-                    <b> Fecha: </b> {props.show.direccion}
-                </div><div>
-                    <b> Observacion: </b> {props.show.Observacion}
-                </div>   
+    if(props.show.TipoMovimiento == 'E'){
+        var row =(<Card>
+            <CardText style={lightBlue100}>
+                <b>{props.show.BuscarComo} </b> ( {props.show.DescProducto} )<br/>
+                <b>Entrada:</b> {props.show.Fecha} 
             </CardText>
-        </Card>
-    )
+        </Card>)
+    }else{
+        var row =(<Card>
+            <CardText style={lightBlue50}>
+                <b>{props.show.BuscarComo} </b> ( {props.show.DescProducto} )<br/>
+                <b>Salida:</b> {props.show.Fecha} <br/>
+                {props.show.Observaciones}
+            </CardText>
+        </Card>)
+    }
+    return row
 }
 module.exports = class DatosUtiles extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            prestaciones: []
+            prestaciones: [],
+            value: "Prestaciones realizadas"
         }
     }
 
@@ -58,24 +64,24 @@ module.exports = class DatosUtiles extends React.Component {
     }
     render(){
         return(
-            <div>
-                <Card>
-                    <CardTitle title="Prestaciones Realizadas"/>
-                 </Card>
+            <span>
+                <AppBar
+                    title={this.state.value}
+                    iconElementLeft={<IconButton onTouchTap={() => browserHistory.push("/home")}><NavigationClose /></IconButton>}
+                />
 
                 <Paper style={form_style} zDepth={2}>
                     {
                         this.state.prestaciones.map((v, i) => (
                             <div key={i}>
                                 <ShowCard show={v} />
-                                <br/>
                             </div>
                           )
                         )
                     }
                 </Paper>
-            </div>
-       )
+            </span>
+        )
     }
 }
 
