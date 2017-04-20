@@ -33,18 +33,18 @@ var Description = require('material-ui/svg-icons/action/description').default
 var Reorder = require('material-ui/svg-icons/action/reorder').default
 var Assignment = require('material-ui/svg-icons/action/assignment').default
 var Toys = require('material-ui/svg-icons/hardware/toys').default
+var Place = require('material-ui/svg-icons/maps/place').default
+var Call = require('material-ui/svg-icons/communication/call').default
 var Done = require('material-ui/svg-icons/action/done').default
 var Dialog = require('material-ui').Dialog
 
-const local_styles = {
-    floating: {
-        bottom: 30,
-        right: 30,
-        position: "fixed",
-        display: "block"
-    }
+function onSuccess(result){
+  console.log("Success: "+result);
 }
 
+function onError(result) {
+  console.log("Error: "+result);
+}
 
 class Prestaciones extends React.Component{
     constructor(props) {
@@ -116,7 +116,16 @@ module.exports = class Patients extends React.Component {
             busy: JSON.parse(sessionStorage.loggedBusy),
             paciente: locatePatient(props.params.id),
             observaciones: "",
-            show_observaciones_salida: false
+            show_observaciones_salida: false,
+            styles: {
+                floating: {
+                    bottom: 30,
+                    right: 30,
+                    position: "fixed",
+                    display: "block",
+                    zIndex: 999,
+                }
+            }
         }
     }
 
@@ -165,19 +174,19 @@ module.exports = class Patients extends React.Component {
         var rightAction = undefined
         if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador != this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} style={local_styles.floating}>
+                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} style={this.state.styles.floating}>
                     Ir a
                 </FloatingActionButton >
             )
         } else if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={this.openMarcarSalida} style={local_styles.floating}>
+                <FloatingActionButton onTouchTap={this.openMarcarSalida} style={this.state.styles.floating}>
                     Salir
                 </FloatingActionButton>
             )
         } else if (this.state.busy == null) {
             rightAction = (
-                <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={local_styles.floating}>
+                <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={this.state.styles.floating}>
                     Entrar
                 </FloatingActionButton>
             )
@@ -203,8 +212,17 @@ module.exports = class Patients extends React.Component {
                                     <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
                                     <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
                                     <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
-                                    <p><strong>Telefono: </strong> {this.state.paciente.Telefono1}.</p>
-                                    <p><strong>Direccion: </strong> {this.state.paciente.Domicilio}.</p>                                </div>   
+                                    <div><strong>Teléfono: </strong> {this.state.paciente.Telefono1}. 
+                                        <IconButton onTouchTap={() => window.plugins.CallNumber.callNumber(onSuccess, onError, this.state.paciente.Telefono1, false)}>
+                                            <Call />
+                                        </IconButton>
+                                    </div>
+                                    <div><strong>Dirección: </strong> {this.state.paciente.Domicilio}. 
+                                        <IconButton href={"https://www.google.com.ar/maps/place/" + this.state.paciente.Domicilio}> 
+                                            <Place /> 
+                                        </IconButton>
+                                    </div>
+                               </div>   
                             </CardText>
                         </Card>
                     </Tab>

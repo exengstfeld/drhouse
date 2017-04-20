@@ -32,7 +32,6 @@ injectTapEventPlugin();
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.handleToggle = this.handleToggle.bind(this);
         this.signOut = this.signOut.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.goHome = this.goHome.bind(this);
@@ -42,6 +41,11 @@ class App extends React.Component {
         this.state = {
             open: false
         };
+    }
+
+    componentDidMount(){
+        // para que el drawer pueda abrirse de las vistas hijos, llamando a esta funcion global
+        window.toggleDrawer = this.handleToggle.bind(this);
     }
 
     handleToggle(){
@@ -65,13 +69,11 @@ class App extends React.Component {
     
     goUtiles(event){
         this.handleClose();
-        sessionStorage.Datos_Utiles = "";
         browserHistory.push("/utiles");
     }
     
     goPrestadorHistorial(event){
         this.handleClose();
-        sessionStorage.prestaciones = "";
         browserHistory.push("/historial");
     }
     render(){

@@ -12,6 +12,8 @@ var List = require('material-ui/List').List;
 var ListItem = require('material-ui/List').ListItem;
 var Subheader = require('material-ui').Subheader;
 var Avatar = require('material-ui').Avatar;
+var IconButton = require('material-ui').IconButton
+var Menu = require('material-ui/svg-icons/navigation/menu').default
 
 var AppBar = require('material-ui').AppBar
 var getPriorizationIcon = require('../js/utils').getPriorizationIcon
@@ -70,6 +72,7 @@ module.exports = class Home extends React.Component {
             <div>
                 <AppBar
                     title={"Bandeja de entrada"}
+                    iconElementLeft={<IconButton onTouchTap={window.toggleDrawer}><Menu /></IconButton>}
                 />
                 <ReactPullToRefresh onRefresh={this.handleRefresh}>
                     <List>
