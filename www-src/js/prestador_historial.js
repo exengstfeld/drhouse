@@ -2,7 +2,6 @@ var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var Divider = require('material-ui').Divider
 var Paper = require('material-ui').Paper
-var form_style = require('../js/config').form_style
 var TextField = require('material-ui').TextField
 var RaisedButton = require('material-ui').RaisedButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
@@ -14,28 +13,37 @@ var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var NavigationClose = require('material-ui/svg-icons/navigation/close').default
 
-var {lightBlue50, lightBlue100} = require('material-ui/styles/colors')
+var form_style = require('../js/config').form_style
+var indigo50_style = require('../js/config').indigo50_style
+var lightBlue50_style = require('../js/config').lightBlue50_style
 
 
 function ShowCard(props){
     if(props.show.TipoMovimiento == 'E'){
-        var row =(<Card>
-            <CardText style={lightBlue100}>
-                <b>{props.show.BuscarComo} </b> ( {props.show.DescProducto} )<br/>
-                <b>Entrada:</b> {props.show.Fecha} 
-            </CardText>
-        </Card>)
+        var row =(
+            <Card style={lightBlue50_style}>
+                <CardText>
+                    <p><b>{props.show.BuscarComo} </b> ( {props.show.DescProducto} )<br/></p>
+                    <p><b>Entrada:</b> {props.show.Fecha} <br/></p> 
+                </CardText>
+            </Card>
+        )
     }else{
-        var row =(<Card>
-            <CardText style={lightBlue50}>
-                <b>{props.show.BuscarComo} </b> ( {props.show.DescProducto} )<br/>
-                <b>Salida:</b> {props.show.Fecha} <br/>
-                {props.show.Observaciones}
-            </CardText>
-        </Card>)
+        var row =(
+            <Card style={indigo50_style}>
+                <CardText>
+                    <div>
+                        <p><b>{props.show.BuscarComo} </b> ( {props.show.DescProducto} )</p>
+                        <p><b>Salida:</b> {props.show.Fecha} </p>
+                        <p>{props.show.Observaciones}</p>
+                    </div>
+                </CardText>
+            </Card>
+        )
     }
     return row
 }
+
 module.exports = class DatosUtiles extends React.Component {
     constructor(props) {
         super(props);
@@ -46,11 +54,7 @@ module.exports = class DatosUtiles extends React.Component {
     }
 
     componentDidMount(){
-        if (sessionStorage.prestaciones != undefined && sessionStorage.prestaciones.length > 0){
-            this.setState({prestaciones: JSON.parse(sessionStorage.prestacionesx)});
-        } else {
-            this.loadData()
-        }
+        this.loadData()
     }
 
     loadData(){ 

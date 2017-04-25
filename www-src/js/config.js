@@ -1,9 +1,18 @@
 var React = require('react')
 var getMuiTheme = require('material-ui/styles').getMuiTheme
-var {cyan700, grey600, pinkA100, pinkA200, pinkA400, fullWhite} = require('material-ui/styles/colors')
 var {fade} = require('material-ui/utils/colorManipulator')
 var spacing = require('material-ui/styles/spacing')
-var {amber500, redA700} = require('material-ui/styles/colors');
+var {
+  indigo50, 
+  blue50, 
+  lightBlue50,
+  cyan700, 
+  grey600, 
+  pinkA100, 
+  pinkA200, 
+  pinkA400, 
+  fullWhite} = require('material-ui/styles/colors')
+
 
 module.exports = {
     api_base_url: "http://localhost:5500/api/mobile",
@@ -18,6 +27,18 @@ module.exports = {
 
     app_bar_style: {
       backgroundColor: "rgb(173, 0, 0)"
+    },
+
+    blue50_style: {
+      backgroundColor:blue50
+    },
+
+    indigo50_style: {
+      backgroundColor:indigo50
+    },
+
+    lightBlue50_style: {
+      backgroundColor:lightBlue50
     },
 
     app_bar_strong_style: {

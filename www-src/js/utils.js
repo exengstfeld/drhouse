@@ -48,6 +48,7 @@ module.exports = {
         }
         throw Error("No se ha localizado la paciente "+ id_paciente);
     },
+
     post: function(url, body){
         var options = {
             "method": "POST",
@@ -59,6 +60,7 @@ module.exports = {
         }
         return call(url, options);    
     },
+
     get: function(url){
         var options = {
             "method": "GET",

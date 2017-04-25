@@ -1,41 +1,24 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
-var Paper = require('material-ui').Paper
-var FlatButton = require('material-ui').FlatButton
-var form_style = require('../js/config').form_style
 var locatePatient = require ('../js/utils').locatePatient 
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
-var input_style = require('../js/config').input_style
 var TextField = require('material-ui').TextField
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var NavigationClose = require('material-ui/svg-icons/navigation/close').default
 
-var Subheader = require('material-ui').Subheader;
-var List = require('material-ui/List').List;
-var ListItem = require('material-ui/List').ListItem;
-
 var RaisedButton = require('material-ui').RaisedButton
 var styles = require('../js/config').styles_tabs 
-var Divider = require('material-ui').Divider
 var {Tabs, Tab} = require('material-ui/Tabs')
-var closeActiveSession = require('../js/utils').closeActiveSession
-var app_bar_style = require('../js/config').app_bar_style 
 var get = require('../js/utils').get
 var post = require('../js/utils').post
 var getPriorizationIcon = require('../js/utils').getPriorizationIcon
 var FloatingActionButton = require('material-ui').FloatingActionButton
-var ContentAdd = require('material-ui/svg-icons/content/add').default
-var PlayForWork = require('material-ui/svg-icons/action/play-for-work').default
 var Create = require('material-ui/svg-icons/content/create').default
-var Description = require('material-ui/svg-icons/action/description').default
-var Reorder = require('material-ui/svg-icons/action/reorder').default
 var Assignment = require('material-ui/svg-icons/action/assignment').default
-var Toys = require('material-ui/svg-icons/hardware/toys').default
 var Place = require('material-ui/svg-icons/maps/place').default
 var Call = require('material-ui/svg-icons/communication/call').default
-var Done = require('material-ui/svg-icons/action/done').default
 var Dialog = require('material-ui').Dialog
 
 function onSuccess(result){
@@ -97,7 +80,6 @@ class Prestaciones extends React.Component{
                       )
                     )
                 }
-
             </span>   
         )
     }
