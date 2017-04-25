@@ -37,6 +37,8 @@ var Place = require('material-ui/svg-icons/maps/place').default
 var Call = require('material-ui/svg-icons/communication/call').default
 var Done = require('material-ui/svg-icons/action/done').default
 var Dialog = require('material-ui').Dialog
+var {blue500, red500, greenA200} = require('material-ui/styles/colors')
+
 
 function onSuccess(result){
   console.log("Success: "+result);
@@ -45,6 +47,39 @@ function onSuccess(result){
 function onError(result) {
   console.log("Error: "+result);
 }
+
+const local_styles = {
+    marcar_entrada_icon: {
+        bottom: 30,
+        right: 30,
+        position: "fixed",
+        display: "block",
+        zIndex: 999,
+        backgroundColor: greenA200
+    },
+    marcar_salida_icon: {
+        bottom: 30,
+        right: 30,
+        position: "fixed",
+        display: "block",
+        zIndex: 999,
+        backgroundColor: red500
+    },
+    ir_a_paciente_icon: {
+        bottom: 30,
+        right: 30,
+        position: "fixed",
+        display: "block",
+        zIndex: 999,
+        backgroundColor: blue500
+    },
+}
+
+const MarcarEntadaIcon = (props) => (<p>Entrada</p>);
+const MarcarSalidaIcon = (props) => (<p>Salida</p>);
+const IrAPacienteIcon = (props) => (<p>Ir a</p>);
+
+
 
 class Prestaciones extends React.Component{
     constructor(props) {
@@ -116,16 +151,7 @@ module.exports = class Patients extends React.Component {
             busy: JSON.parse(sessionStorage.loggedBusy),
             paciente: locatePatient(props.params.id),
             observaciones: "",
-            show_observaciones_salida: false,
-            styles: {
-                floating: {
-                    bottom: 30,
-                    right: 30,
-                    position: "fixed",
-                    display: "block",
-                    zIndex: 999,
-                }
-            }
+            show_observaciones_salida: false
         }
     }
 
@@ -174,20 +200,20 @@ module.exports = class Patients extends React.Component {
         var rightAction = undefined
         if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador != this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} style={this.state.styles.floating}>
-                    Ir a
+                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} style={local_styles.ir_a_paciente_icon}>
+                    <IrAPacienteIcon />
                 </FloatingActionButton >
             )
         } else if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={this.openMarcarSalida} style={this.state.styles.floating}>
-                    Salir
+                <FloatingActionButton onTouchTap={this.openMarcarSalida} style={local_styles.marcar_salida_icon}>
+                    <MarcarSalidaIcon />
                 </FloatingActionButton>
             )
         } else if (this.state.busy == null) {
             rightAction = (
-                <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={this.state.styles.floating}>
-                    Entrar
+                <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={local_styles.marcar_entrada_icon}>
+                    <MarcarEntadaIcon />
                 </FloatingActionButton>
             )
         }
