@@ -17,17 +17,59 @@ var Menu = require('material-ui/svg-icons/navigation/menu').default
 
 var AppBar = require('material-ui').AppBar
 var getPriorizationIcon = require('../js/utils').getPriorizationIcon
+var isBusy = require('../js/utils').isBusy
 var RaisedButton = require('material-ui').RaisedButton
 var TextField = require('material-ui').TextField
 var Divider = require('material-ui').Divider
 var ReactPullToRefresh = require('react-pull-to-refresh')
-// var Notification = require('../js/common').Notification
+
+var Person = require('material-ui/svg-icons/social/person').default
+var PermIdentity = require('material-ui/svg-icons/action/perm-identity').default
+var lightBlue50_style = require('../js/config').lightBlue50_style
+
+
+function ShowCard(param){
+    if((param.busy != null) && 
+         (param.busy.IDPrestacionPrestador == param.v.IDPrestacionPrestador)){
+        var row =(
+            <ListItem style={lightBlue50_style}
+                leftAvatar={<Person/>}
+                primaryText={param.v.BuscarComo} 
+                secondaryText={
+                    <p>
+                        {param.v.DescProducto} ({param.v.HoraDesde} - {param.v.HoraHasta} hs)   
+                    </p>
+                }
+                secondaryTextLines={2}
+                href={"index.html#/patients/" + param.v.IDPrestacionPrestador}
+            />
+        )
+    }else{
+        var row =(
+            <ListItem
+                leftAvatar={<PermIdentity/>}
+                primaryText={param.v.BuscarComo} 
+                secondaryText={
+                    <p>
+                        {param.v.DescProducto} ({param.v.HoraDesde} - {param.v.HoraHasta} hs)   
+                    </p>
+                }
+                secondaryTextLines={2}
+                href={"index.html#/patients/" + param.v.IDPrestacionPrestador}
+            />
+        )
+    }
+    return row
+}
+
+
 module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
         this.handleRefresh = this.handleRefresh.bind(this);
         this.state = {
-            shows: []
+            shows: [],
+            busy: JSON.parse(sessionStorage.loggedBusy),
         };
     }
         
@@ -80,17 +122,7 @@ module.exports = class Home extends React.Component {
                     {
                         this.state.shows.map((v, i) => (
                             <span key={i}>
-                                <ListItem
-                                    leftAvatar={<Avatar src={getPriorizationIcon(v.status)} />}
-                                    primaryText={v.BuscarComo} 
-                                    secondaryText={
-                                        <p>
-                                            {v.DescProducto} ({v.HoraDesde} - {v.HoraHasta} hs)   
-                                        </p>
-                                  }
-                                  secondaryTextLines={2}
-                                  href={"index.html#/patients/" + v.IDPrestacionPrestador}
-                                />
+                                <ShowCard v={v} busy={this.state.busy}/>
                                 <Divider inset={true} />
                             </span>
                           )
