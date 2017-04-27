@@ -2,9 +2,22 @@ var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var locatePatient = require ('../js/utils').locatePatient 
-var FlatButton = require('material-ui').FlatButton
+var RaisedButton = require('material-ui').RaisedButton
+var AppBar = require('material-ui').AppBar
+var IconButton = require('material-ui').IconButton
+var NavigationClose = require('material-ui/svg-icons/navigation/close').default
+
 var get = require('../js/utils').get
 var post = require('../js/utils').post
+var {greenA200} = require('material-ui/styles/colors')
+
+const local_styles = {
+    div_principal: {
+        zIndex: 999,
+		padding: "20px"
+    }
+}
+
 
 module.exports = class Patients extends React.Component {
     constructor(props) {
@@ -52,8 +65,18 @@ module.exports = class Patients extends React.Component {
     render(){
         return(
             <span>
-                {this.state.code}
-                <FlatButton onTouchTap={this.marcar_entrada} label="Marcar Entrada" />
+                <AppBar
+                    title={"Marcar entrada"}
+                    iconElementLeft={<IconButton onTouchTap={() => browserHistory.goBack()}><NavigationClose /></IconButton>}
+                />
+                <div style={local_styles.div_principal}>
+                    <p><strong>Nombre: </strong> {this.state.paciente.BuscarComo} ({this.state.paciente.EDAD} año)</p>
+                    <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
+                    <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
+                    <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
+                    <RaisedButton onTouchTap={this.marcar_entrada} label="Atender" />
+                    <RaisedButton onTouchTap={() => browserHistory.goBack()} label="Volver" />
+                </div>
             </span>
        )
     }

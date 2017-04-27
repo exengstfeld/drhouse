@@ -229,15 +229,17 @@ module.exports = class Patients extends React.Component {
                                     <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
                                     <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
                                     <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
-                                    <div><strong>Teléfono: </strong> {this.state.paciente.Telefono1}. 
+                                    <div>
                                         <IconButton onTouchTap={() => window.plugins.CallNumber.callNumber(onSuccess, onError, this.state.paciente.Telefono1, false)}>
                                             <Call />
                                         </IconButton>
+                                        {this.state.paciente.Telefono1}
                                     </div>
-                                    <div><strong>Dirección: </strong> {this.state.paciente.Domicilio}. 
+                                    <div>
                                         <IconButton href={"https://www.google.com.ar/maps/place/" + this.state.paciente.Domicilio}> 
                                             <Place /> 
                                         </IconButton>
+                                        {this.state.paciente.Domicilio}
                                     </div>
                                </div>   
                             </CardText>
