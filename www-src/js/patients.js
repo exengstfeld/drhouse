@@ -22,6 +22,10 @@ var Call = require('material-ui/svg-icons/communication/call').default
 var Dialog = require('material-ui').Dialog
 var {blue500, red500, greenA200} = require('material-ui/styles/colors')
 
+var PersonPin = require('material-ui/svg-icons/maps/person-pin').default
+var ExitToApp = require('material-ui/svg-icons/action/exit-to-app').default
+
+
 
 function onSuccess(result){
   console.log("Success: "+result);
@@ -38,6 +42,7 @@ const local_styles = {
         position: "fixed",
         display: "block",
         zIndex: 999,
+        buttonColor: '#9b59b6',
         backgroundColor: greenA200
     },
     marcar_salida_icon: {
@@ -58,9 +63,9 @@ const local_styles = {
     },
 }
 
-const MarcarEntadaIcon = (props) => (<p>Entrada</p>);
-const MarcarSalidaIcon = (props) => (<p>Salida</p>);
-const IrAPacienteIcon = (props) => (<p>Ir a</p>);
+const MarcarEntadaIcon = (props) => (<PersonPin/>);
+const MarcarSalidaIcon = (props) => (<ExitToApp/>);
+const IrAPacienteIcon = (props) => (<p><b>Ir a</b></p>);
 
 
 
@@ -182,22 +187,26 @@ module.exports = class Patients extends React.Component {
         var rightAction = undefined
         if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador != this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} style={local_styles.ir_a_paciente_icon}>
+                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} 
+                                      style={local_styles.ir_a_paciente_icon}>
                     <IrAPacienteIcon />
                 </FloatingActionButton >
             )
         } else if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={this.openMarcarSalida} style={local_styles.marcar_salida_icon}>
+                <FloatingActionButton onTouchTap={this.openMarcarSalida} 
+                                      secondary={true} 
+                                      style={local_styles.marcar_salida_icon}>
                     <MarcarSalidaIcon />
-                </FloatingActionButton>
+                </FloatingActionButton> 
             )
         } else if (this.state.busy == null) {
             rightAction = (
                 <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={local_styles.marcar_entrada_icon}>
-                    <MarcarEntadaIcon />
+                    <MarcarEntadaIcon/>
                 </FloatingActionButton>
             )
+        
         }
         return(
             <span>
