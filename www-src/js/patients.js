@@ -15,7 +15,7 @@ var get = require('../js/utils').get
 var post = require('../js/utils').post
 var getPriorizationIcon = require('../js/utils').getPriorizationIcon
 var FloatingActionButton = require('material-ui').FloatingActionButton
-var Create = require('material-ui/svg-icons/content/create').default
+var AssignmentInd = require('material-ui/svg-icons/action/assignment-ind').default
 var Assignment = require('material-ui/svg-icons/action/assignment').default
 var Place = require('material-ui/svg-icons/maps/place').default
 var Call = require('material-ui/svg-icons/communication/call').default
@@ -24,6 +24,7 @@ var {blue500, red500, greenA200} = require('material-ui/styles/colors')
 
 var PersonPin = require('material-ui/svg-icons/maps/person-pin').default
 var ExitToApp = require('material-ui/svg-icons/action/exit-to-app').default
+var People = require('material-ui/svg-icons/social/people').default
 
 
 
@@ -132,6 +133,7 @@ module.exports = class Patients extends React.Component {
         this.marcar_salida = this.marcar_salida.bind(this)
         this.openMarcarSalida = this.openMarcarSalida.bind(this)
         this.handleObservacionesChange = this.handleObservacionesChange.bind(this);
+        this.handleDialogClose = this.handleDialogClose.bind(this)
 
         this.state = {
             value:'Detalles',
@@ -163,9 +165,24 @@ module.exports = class Patients extends React.Component {
     }
 
     handleChange(value){
+        console.info('statu value: ', value)
+        if(value=='Call'){
+            value = 'Detalles'
+        }
+        if(value=='Place'){
+            value = 'Detalles'
+        }
+        if(value=='Cambiar'){
+            value = 'Detalles'
+        }
+        if(value=='Salida'){
+            value = 'Detalles'
+        }
+
         this.setState({
           value: value
         })
+
     }
     handleObservacionesChange(event){
         this.setState({
@@ -174,7 +191,10 @@ module.exports = class Patients extends React.Component {
     }
 
     openMarcarSalida(){
-        this.setState({show_observaciones_salida: true})
+        console.info('marca la salida !!!')
+        this.setState({
+            show_observaciones_salida: true
+        })
     }
 
     handleDialogClose(){
@@ -187,36 +207,32 @@ module.exports = class Patients extends React.Component {
         var rightAction = undefined
         if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador != this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})} 
-                                      style={local_styles.ir_a_paciente_icon}>
-                    <IrAPacienteIcon />
-                </FloatingActionButton >
+                <Tab icon={<People/>} label="Cambiar" value="Cambiar" onActive={() => this.setState({paciente: locatePatient(this.state.busy.IDPrestacionPrestador)})}>
+                    <Prestaciones/>
+                </Tab>
             )
         } else if ((this.state.busy != null) && (this.state.busy.IDPrestacionPrestador == this.state.paciente.IDPrestacionPrestador)) {
             rightAction = (
-                <FloatingActionButton onTouchTap={this.openMarcarSalida} 
-                                      secondary={true} 
-                                      style={local_styles.marcar_salida_icon}>
-                    <MarcarSalidaIcon />
-                </FloatingActionButton> 
+                    <Tab icon={<ExitToApp/>} label="Salida" value="Salida" onActive={this.openMarcarSalida}>
+                        <Prestaciones/>
+                    </Tab>
             )
         } else if (this.state.busy == null) {
             rightAction = (
-                <FloatingActionButton href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador} style={local_styles.marcar_entrada_icon}>
-                    <MarcarEntadaIcon/>
-                </FloatingActionButton>
+                <Tab icon={<PersonPin/>} label="Entrada" value="Entrada" href={"index.html#/validar_entrada/" + this.state.paciente.IDPrestacionPrestador}>
+                    <Prestaciones/>
+                </Tab>
             )
         
         }
         return(
             <span>
                 <AppBar
-                    title={this.state.value}
+                    title={this.state.paciente.BuscarComo}
                     iconElementLeft={<IconButton onTouchTap={() => browserHistory.push("/home")}><NavigationClose /></IconButton>}
                 />
-                {rightAction}
                 <Tabs value={this.state.value} onChange={this.handleChange} >
-                    <Tab icon={<Assignment />} value="Detalles">
+                    <Tab icon={<AssignmentInd/>} label="Paciente" value="Detalles">
                         <Card>
                             <CardHeader
                                 avatar={getPriorizationIcon(this.state.paciente.status)}
@@ -229,39 +245,36 @@ module.exports = class Patients extends React.Component {
                                     <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
                                     <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
                                     <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
-                                    <div>
-                                        <IconButton onTouchTap={() => window.plugins.CallNumber.callNumber(onSuccess, onError, this.state.paciente.Telefono1, false)}>
-                                            <Call />
-                                        </IconButton>
-                                        {this.state.paciente.Telefono1}
-                                    </div>
-                                    <div>
-                                        <IconButton href={"https://www.google.com.ar/maps/place/" + this.state.paciente.Domicilio}> 
-                                            <Place /> 
-                                        </IconButton>
-                                        {this.state.paciente.Domicilio}
-                                    </div>
+                                    <p><strong>Telefono: </strong>{this.state.paciente.Telefono1}</p>
+                                    <p><strong>Direccion: </strong>{this.state.paciente.Domicilio}</p>
                                </div>   
                             </CardText>
                         </Card>
                     </Tab>
-
-                    <Tab icon={<Create />} value="Prestaciones" >
+                    <Tab icon={<Assignment/>} label="Obser" value="Prestaciones" >
+                        <Prestaciones paciente={this.state.paciente} />
+                    </Tab>
+                    <Tab icon={<Call/>} label="Llamar" value="Call" onActive={window.plugins.CallNumber.callNumber(onSuccess, onError, this.state.paciente.Telefono1, false)}>                                        
                         <Prestaciones paciente={this.state.paciente} />
                     </Tab>
 
+                    <Tab icon={<Place/>} label="Mapa" value="Place" href={"https://www.google.com.ar/maps/place/" + this.state.paciente.Domicilio}>
+                        <Prestaciones paciente={this.state.paciente} />
+                    </Tab>
+                    {rightAction}
                   </Tabs>                 
 
                   <Dialog
                       title="Marcar salida"
                       actions={[
                           <RaisedButton label="Marcar salida" onTouchTap={this.marcar_salida} />,
+                          <RaisedButton label="Cancelar" onTouchTap={this.handleDialogClose} />,
                       ]}
                     modal={false}
                     open={this.state.show_observaciones_salida}
                     onRequestClose={this.handleDialogClose}
                   >
-                      Por favor, ingrese las observaciones del paciente
+                      Observaciones del paciente
                       <TextField
                           id="id_observacion"
                           hintText="Prestacion realizada"

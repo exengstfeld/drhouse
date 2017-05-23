@@ -74,7 +74,7 @@ module.exports = class Patients extends React.Component {
                     <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
                     <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
                     <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
-                    <RaisedButton onTouchTap={this.marcar_entrada} label="Atender" />
+                    <RaisedButton onTouchTap={this.marcar_entrada} label="Atender" />   
                     <RaisedButton onTouchTap={() => browserHistory.goBack()} label="Volver" />
                 </div>
             </span>

@@ -17,7 +17,6 @@ var form_style = require('../js/config').form_style
 var indigo50_style = require('../js/config').indigo50_style
 var lightBlue50_style = require('../js/config').lightBlue50_style
 
-
 function ShowCard(props){
     if(props.show.TipoMovimiento == 'E'){
         var row =(

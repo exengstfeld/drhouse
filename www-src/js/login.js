@@ -29,7 +29,7 @@ module.exports = class Login extends React.Component {
             error: false,
             username: "",
             password: "",
-            show_login: false
+            show_login: true
         };
     }
     
@@ -87,16 +87,16 @@ module.exports = class Login extends React.Component {
         return ( 
             <div>
                 <AppBar
-                    title={"Dr. House App"}
+                    title={"Dr. Home App"}
                     iconElementRight={
                         <FlatButton label="Acceder" onTouchTap={this.openLogin} />
                     }
                 />
                   <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                   <Card>
-                    <CardTitle title="Bienvenido" subtitle="Descubra más acerca de Dr. House App" />
+                    <CardTitle title="Bienvenido" subtitle="Descubra más acerca de Dr. Home App" />
                     <CardText>
-                      <p><strong>Dr. House App</strong> Es una aplicación diseñada para optimizar los trabajos de internación domiciliaria. Permite llevar un tracking de la prestación realizada, cargar insumos, consultar la hoja de admisión y detectar el momento de entrada y salida al momento de realizar la prestación verificando y validando la geolocalización</p>
+                      <p><strong>Dr. Home App</strong> Es una aplicación diseñada para optimizar los trabajos de internación domiciliaria. Permite llevar un tracking de la prestación realizada, cargar insumos, consultar la hoja de admisión y detectar el momento de entrada y salida al momento de realizar la prestación verificando y validando la geolocalización</p>
                     </CardText>
                  </Card>
                     <Dialog
