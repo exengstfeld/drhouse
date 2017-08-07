@@ -1,7 +1,7 @@
 {
-  "name": "DrHouse",
+  "name": "SW Prestaciones",
   "version": "0.0.1",
-  "description": "Mobile APP",
+  "description": "Softwerk Prestaciones Mobile",
   "main": "js/index.js",
   "dependencies": {
     "react": "^15.1.0",
