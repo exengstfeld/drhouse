@@ -1,86 +1,33 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
-var locatePatient = require ('../js/utils').locatePatient 
-var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var Paper = require('material-ui').Paper
 var TextField = require('material-ui').TextField
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var ArrowBackIcon = require('material-ui/svg-icons/navigation/arrow-back').default
-
 var RaisedButton = require('material-ui').RaisedButton
-var styles = require('../js/config').styles_tabs 
 var {Tabs, Tab} = require('material-ui/Tabs')
-var get = require('../js/utils').get
-var post = require('../js/utils').post
-var getPriorizationIcon = require('../js/utils').getPriorizationIcon
-var FloatingActionButton = require('material-ui').FloatingActionButton
 var AssignmentInd = require('material-ui/svg-icons/action/assignment-ind').default
 var Assignment = require('material-ui/svg-icons/action/assignment').default
 var Place = require('material-ui/svg-icons/maps/place').default
 var Call = require('material-ui/svg-icons/communication/call').default
-var Dialog = require('material-ui').Dialog
-var {blue500, red500, greenA200} = require('material-ui/styles/colors')
 var Divider = require('material-ui').Divider
-
 var PersonPin = require('material-ui/svg-icons/maps/person-pin').default
 var ExitToApp = require('material-ui/svg-icons/action/exit-to-app').default
 var People = require('material-ui/svg-icons/social/people').default
 
-var form_style: {
-      padding: 16
-}
-
-function onSuccess(result){
-  console.log("Success: "+result);
-}
-
-function onError(result) {
-  console.log("Error: "+result);
-}
-
-const local_styles = {
-    marcar_entrada_icon: {
-        bottom: 30,
-        right: 30,
-        position: "fixed",
-        display: "block",
-        zIndex: 999,
-        buttonColor: '#9b59b6',
-        backgroundColor: greenA200
-    },
-    marcar_salida_icon: {
-        bottom: 30,
-        right: 30,
-        position: "fixed",
-        display: "block",
-        zIndex: 999,
-        backgroundColor: red500
-    },
-    ir_a_paciente_icon: {
-        bottom: 30,
-        right: 30,
-        position: "fixed",
-        display: "block",
-        zIndex: 999,
-        backgroundColor: blue500
-    },
-}
-
-const MarcarEntadaIcon = (props) => (<PersonPin/>);
-const MarcarSalidaIcon = (props) => (<ExitToApp/>);
-const IrAPacienteIcon = (props) => (<p><b>Ir a</b></p>);
-
-
+// Utils
+var get = require('../utils').get
+var post = require('../utils').post
+var locatePatient = require ('../utils').locatePatient 
+var isNotLoggedIn = require('../utils').isNotLoggedIn
 
 class Prestaciones extends React.Component{
     constructor(props) {
         super(props);
-        this.handleDialogClose = this.handleDialogClose.bind(this)
         this.getPrestaciones = this.getPrestaciones.bind(this)
         this.state = {
-            show_new_prestacion: false,
             feedback: "",
             error: false,
             prestaciones: [],
@@ -105,10 +52,6 @@ class Prestaciones extends React.Component{
         }.bind(this))   
     }
 
-    handleDialogClose(){
-        this.setState({show_new_prestacion: false, observacion: ""})
-    }
- 
     render(){         
         return (
             <span>   
@@ -170,7 +113,10 @@ module.exports = class Patients extends React.Component {
 
 
     handleCall(){
-        window.plugins.CallNumber.callNumber(onSuccess, onError, this.state.paciente.Telefono1, false)
+        window.plugins.CallNumber.callNumber(
+                (result) => console.log("CALL SUCCESS: " + result), 
+                (result) => console.log("CALL ERROR: " + result), 
+                this.state.paciente.Telefono1, false)
     }
 
     handleChange(value){
@@ -223,10 +169,10 @@ module.exports = class Patients extends React.Component {
                               <TextField underlineShow={false} style={{"width": "100px"}} inputStyle={{"width": "20px"}} floatingLabelText="Medida" value={this.state.paciente.CodUnidadMedidaSalida}  />
                               <Divider />
                               <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Hora desde" value={this.state.paciente.HoraDesde}  />
-                              <TextField underlineShow={false} style={{"width": "80px"}} inputStyle={{"width": "20px"}} floatingLabelText="Hora hasta" value={this.state.paciente.HoraHasta}  />
+                              <TextField underlineShow={false} style={{"width": "80px"}} inputStyle={{"width": "40px"}} floatingLabelText="Hora hasta" value={this.state.paciente.HoraHasta}  />
                            </Paper>  
                       </CardText>
-                      <CardActions style={{"text-align":"center"}}>
+                      <CardActions style={{"text-align": "center"}}>
                         {rightAction}
                         <RaisedButton icon={<Call/>} label="Llamar" disabled={!(this.state.paciente.Telefono1 && parseInt(this.state.paciente.Telefono1))}
                             onTouchTap={this.handleCall}>                                        
@@ -245,4 +191,3 @@ module.exports = class Patients extends React.Component {
        )
     }
 }
-

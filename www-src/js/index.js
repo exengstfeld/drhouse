@@ -11,22 +11,21 @@ var Divider = require('material-ui').Divider
 var Drawer = require('material-ui').Drawer
 var MenuItem = require('material-ui').MenuItem
 var {Card, CardHeader,CardText, CardMedia} = require('material-ui/Card')
-var injectTapEventPlugin = require('react-tap-event-plugin')
-var Login = require('../js/login')
-var ScanTicket = require('../js/eticket')
-var Home = require('../js/home')
-var validar_entrada = require('../js/validar_entrada')
-var validar_salida = require('../js/validar_salida')
-var utiles = require('../js/datosutiles')
-var historial = require('../js/prestador_historial')
-var patients = require('../js/patients')
-//var darkBaseTheme = require('../js/config').darkBaseTheme
-//var lightBaseTheme = require('material-ui/styles/baseThemes/lightBaseTheme')
-var customTheme = require('../js/softwerkTheme')
+
+// Utils and Custom
+var customTheme = require('../js/config').theme
 var closeActiveSession = require('../js/utils').closeActiveSession
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
-var app_bar_style = require('../js/config').app_bar_style 
-var app_bar_strong_style = require('../js/config').app_bar_strong_style
+
+// Views
+var Login = require('../js/views/login')
+var Home = require('../js/views/home')
+var validar_entrada = require('../js/views/validar_entrada')
+var validar_salida = require('../js/views/validar_salida')
+var historial = require('../js/views/prestador_historial')
+var patients = require('../js/views/patients')
+
+var injectTapEventPlugin = require('react-tap-event-plugin')
 
 require('es6-promise').polyfill();
 injectTapEventPlugin();
@@ -37,7 +36,6 @@ class App extends React.Component {
         this.signOut = this.signOut.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.goHome = this.goHome.bind(this);
-        this.goUtiles = this.goUtiles.bind(this);
         this.goPrestadorHistorial = this.goPrestadorHistorial.bind(this);
         // this.refresh = this.refresh.bind(this);
         this.state = {
@@ -68,12 +66,7 @@ class App extends React.Component {
         this.handleClose();
         browserHistory.push("/home");
     }
-    
-    goUtiles(event){
-        this.handleClose();
-        browserHistory.push("/utiles");
-    }
-    
+
     goPrestadorHistorial(event){
         this.handleClose();
         browserHistory.push("/historial");
@@ -116,8 +109,6 @@ ReactDOM.render((
           <Route path="/" component={App} >
              <IndexRoute component={Login}/>
              <Route path='home' component={Home}/>
-             <Route path='scan/:id' component={ScanTicket}/>
-             <Route path='utiles' component={utiles}/>
              <Route path='historial' component={historial}/>
              <Route path='patients/:id' component={patients}/>
              <Route path='validar_entrada/:id' component={validar_entrada}/>

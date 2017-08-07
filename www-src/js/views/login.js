@@ -5,13 +5,14 @@ var Paper = require('material-ui').Paper
 var TextField = require('material-ui').TextField
 var AppBar = require('material-ui').AppBar
 var RaisedButton = require('material-ui').RaisedButton
-var Dialog = require('material-ui').Dialog
 var FlatButton = require('material-ui').FlatButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
-var Notification = require('../js/common').Notification
-var input_style = require('../js/config').input_style
-var closeActiveSession = require('../js/utils').closeActiveSession
-var post = require('../js/utils').post
+
+// Utils and Custom
+var Notification = require('../common').Notification
+var login_input_style = require('../config').login_input_style
+var closeActiveSession = require('../utils').closeActiveSession
+var post = require('../utils').post
 
 module.exports = class Login extends React.Component {
 
@@ -19,8 +20,6 @@ module.exports = class Login extends React.Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handleDialogClose = this.handleDialogClose.bind(this);
-        this.openLogin = this.openLogin.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.processLoginError= this.processLoginError.bind(this);
@@ -29,8 +28,7 @@ module.exports = class Login extends React.Component {
             feedback: "",
             error: false,
             username: "",
-            password: "",
-            show_login: false
+            password: ""
         };
     }
     
@@ -75,16 +73,6 @@ module.exports = class Login extends React.Component {
         )     
     }
 
-    handleDialogClose(){
-        this.setState({show_login: false, username: "", password: ""})
-    }
-
-    openLogin(){
-        this.setState({
-          show_login: true,
-        })
-    }
-
     render(){
         return ( 
             <div>
@@ -96,7 +84,7 @@ module.exports = class Login extends React.Component {
                     <CardTitle title="Bienvenido" subtitle="Ingrese sus credenciales de acceso" />
                     <CardText>
                       <Paper style={{"padding": "10px"}}>
-                          <TextField style={input_style} 
+                          <TextField style={login_input_style} 
                                     underlineShow={false} 
                                     floatingLabelText="Usuario" 
                                     id="username-field" 
@@ -104,7 +92,7 @@ module.exports = class Login extends React.Component {
                                     onChange={this.handleUsernameChange} 
                                     />
                           <Divider />
-                          <TextField style={input_style} 
+                          <TextField style={login_input_style} 
                                       underlineShow={false} 
                                       floatingLabelText="Contraseña" 
                                       id="password-field" 

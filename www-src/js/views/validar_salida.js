@@ -1,22 +1,20 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
-var isNotLoggedIn = require('../js/utils').isNotLoggedIn
-var Notification = require('../js/common').Notification
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
-var locatePatient = require ('../js/utils').locatePatient 
 var RaisedButton = require('material-ui').RaisedButton
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var ArrowBackIcon = require('material-ui/svg-icons/navigation/arrow-back').default
-var PersonPin = require('material-ui/svg-icons/maps/person-pin').default
 var ExitToApp = require('material-ui/svg-icons/action/exit-to-app').default
-
 var Paper = require('material-ui').Paper
 var TextField = require('material-ui').TextField
 var Divider = require('material-ui').Divider
-var get = require('../js/utils').get
-var post = require('../js/utils').post
-var {greenA200} = require('material-ui/styles/colors')
+
+// Utils and Custom
+var post = require('../utils').post
+var isNotLoggedIn = require('../utils').isNotLoggedIn
+var locatePatient = require ('../utils').locatePatient 
+var Notification = require('../common').Notification
 
 
 module.exports = class Patients extends React.Component {
@@ -26,7 +24,6 @@ module.exports = class Patients extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleObservacionesChange = this.handleObservacionesChange.bind(this);
         this.state = {
-            code: "",
             error: false,
             observaciones: "",
             paciente: locatePatient(props.params.id),
@@ -74,7 +71,7 @@ module.exports = class Patients extends React.Component {
                     title={"Terminar atención"}
                     iconElementLeft={<IconButton onTouchTap={() => browserHistory.goBack()}><ArrowBackIcon /></IconButton>}
                 />
-                  <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
+                 <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                  <Card>
                   <CardText>
                       <Paper style={{"padding": "10px"}}>
@@ -91,7 +88,7 @@ module.exports = class Patients extends React.Component {
                         />
                        </Paper>  
                   </CardText>
-                  <CardActions style={{"text-align":"center"}}>
+                  <CardActions>
                     <RaisedButton onTouchTap={this.marcar_salida} secondary={true} icon={<ExitToApp/>} fullWidth={true} label="Dejar de atender" />   
                   </CardActions>
                  </Card> 

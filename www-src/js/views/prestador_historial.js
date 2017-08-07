@@ -1,25 +1,17 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
-var Divider = require('material-ui').Divider
-var Paper = require('material-ui').Paper
-var TextField = require('material-ui').TextField
 var RaisedButton = require('material-ui').RaisedButton
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
-var Notification = require('../js/common').Notification
-var closeActiveSession = require('../js/utils').closeActiveSession
-var get = require('../js/utils').get
-
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var ArrowBackIcon = require('material-ui/svg-icons/navigation/arrow-back').default
 
-var form_style = require('../js/config').form_style
-var indigo50_style = require('../js/config').indigo50_style
-var lightBlue50_style = require('../js/config').lightBlue50_style
+// Utils
+var closeActiveSession = require('../utils').closeActiveSession
+var get = require('../utils').get
 
 function ShowCard(props){
-    return (
-            props.show.TipoMovimiento != "E" && (
+    return (props.show.TipoMovimiento != "E" && (
         <Card>
             <CardHeader title={props.show.BuscarComo} 
                 subtitle={props.show.Fecha}
@@ -32,12 +24,11 @@ function ShowCard(props){
     )
 }
 
-module.exports = class DatosUtiles extends React.Component {
+module.exports = class HistorialPrestaciones extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            prestaciones: [],
-            value: "Prestaciones realizadas"
+            prestaciones: []
         }
     }
 
@@ -49,7 +40,6 @@ module.exports = class DatosUtiles extends React.Component {
         get('/prestaciones_historial').then(function(response){
             if (response.success){
                 this.setState({prestaciones: response.data});
-                sessionStorage.prestaciones = JSON.stringify(response.data);
             } else {
                this.setState({feedback: response.data});
             }
@@ -60,10 +50,9 @@ module.exports = class DatosUtiles extends React.Component {
         return(
             <span>
                 <AppBar
-                    title={this.state.value}
+                    title="Prestaciones realizadas"
                     iconElementLeft={<IconButton onTouchTap={() => browserHistory.push("/home")}><ArrowBackIcon /></IconButton>}
                 />
-
                 {
                     this.state.prestaciones.map((v, i) => (
                         <div key={i}>

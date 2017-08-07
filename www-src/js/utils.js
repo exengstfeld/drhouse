@@ -1,7 +1,6 @@
 var api_base_url = require('../js/config').api_base_url
 var fetch = require('isomorphic-fetch')
 
-
 var call = function(url, options){
     return fetch(api_base_url + url, options).then((response) => {
         if (response.status == 200) {
@@ -21,26 +20,12 @@ module.exports = {
 
     closeActiveSession: function(){
         sessionStorage.loggedIn = "";
-        sessionStorage.shows = "";
+        sessionStorage.tasks = "";
         sessionStorage.user = "";
     },
 
-    getPriorizationIcon: function(_status){
-        var avatar_path = ""
-        if (_status == 1){
-            avatar_path = "img/danger.png"
-        }             
-        if (_status == 2){
-            avatar_path = "img/ok.png"
-        }             
-        if (_status == 3){
-            avatar_path = "img/alert.png"
-        }   
-        return avatar_path
-    },
-
     locatePatient: function(id_paciente){
-        var pacientes = JSON.parse(sessionStorage.shows);
+        var pacientes = JSON.parse(sessionStorage.tasks);
         for (var i = 0; i < pacientes.length; i++) {  
             if (pacientes[i].IDPrestacionPrestador == id_paciente){
                 return pacientes[i];

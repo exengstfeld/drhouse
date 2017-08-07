@@ -1,27 +1,20 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
-var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
-var locatePatient = require ('../js/utils').locatePatient 
 var RaisedButton = require('material-ui').RaisedButton
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
 var ArrowBackIcon = require('material-ui/svg-icons/navigation/arrow-back').default
 var PersonPin = require('material-ui/svg-icons/maps/person-pin').default
-
 var Paper = require('material-ui').Paper
 var TextField = require('material-ui').TextField
 var Divider = require('material-ui').Divider
-var get = require('../js/utils').get
-var post = require('../js/utils').post
-var {greenA200} = require('material-ui/styles/colors')
 
-const local_styles = {
-    div_principal: {
-        zIndex: 999,
-		padding: "20px"
-    }
-}
+// Utils
+var get = require('../utils').get
+var post = require('../utils').post
+var locatePatient = require ('../utils').locatePatient 
+var isNotLoggedIn = require('../utils').isNotLoggedIn
 
 
 module.exports = class Patients extends React.Component {
@@ -29,7 +22,6 @@ module.exports = class Patients extends React.Component {
         super(props);
         this.marcar_entrada = this.marcar_entrada.bind(this)
         this.state = {
-            code: "",
             error: false,
             paciente: locatePatient(props.params.id),
             feedback: ""
@@ -80,7 +72,7 @@ module.exports = class Patients extends React.Component {
                           <TextField underlineShow={false} style={{"width": "100px"}} inputStyle={{"width": "20px"}} floatingLabelText="Hora hasta" value={this.state.paciente.HoraHasta}  />
                        </Paper>  
                   </CardText>
-                  <CardActions style={{"text-align":"center"}}>
+                  <CardActions>
                     <RaisedButton onTouchTap={this.marcar_entrada} primary={true} icon={<PersonPin/>} fullWidth={true} label="Atender ahora" />   
                   </CardActions>
                  </Card> 
