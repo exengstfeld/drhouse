@@ -1,6 +1,7 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var Divider = require('material-ui').Divider
+var Paper = require('material-ui').Paper
 var TextField = require('material-ui').TextField
 var AppBar = require('material-ui').AppBar
 var RaisedButton = require('material-ui').RaisedButton
@@ -29,7 +30,7 @@ module.exports = class Login extends React.Component {
             error: false,
             username: "",
             password: "",
-            show_login: true
+            show_login: false
         };
     }
     
@@ -48,6 +49,7 @@ module.exports = class Login extends React.Component {
     processLoginResponse(response) {
         if (response.success){
             sessionStorage.loggedIn = this.state.username;
+            sessionStorage.loggedName = response.data.user.nombre;
             sessionStorage.loggedToken = response.data.token;
             sessionStorage.loggedBusy = JSON.stringify(response.data.busy);
             sessionStorage.user = JSON.stringify(response.data);
@@ -87,44 +89,35 @@ module.exports = class Login extends React.Component {
         return ( 
             <div>
                 <AppBar
-                    title={"Dr. Home App"}
-                    iconElementRight={
-                        <FlatButton label="Acceder" onTouchTap={this.openLogin} />
-                    }
+                    title={"SW Prestaciones"}
                 />
                   <Notification open={this.state.error} onRequestClose={this.handleClose}>{this.state.feedback}</Notification>
                   <Card>
-                    <CardTitle title="Bienvenido" subtitle="Descubra más acerca de Dr. Home App" />
+                    <CardTitle title="Bienvenido" subtitle="Ingrese sus credenciales de acceso" />
                     <CardText>
-                      <p><strong>Dr. Home App</strong> Es una aplicación diseñada para optimizar los trabajos de internación domiciliaria. Permite llevar un tracking de la prestación realizada, cargar insumos, consultar la hoja de admisión y detectar el momento de entrada y salida al momento de realizar la prestación verificando y validando la geolocalización</p>
+                      <Paper style={{"padding": "10px"}}>
+                          <TextField style={input_style} 
+                                    underlineShow={false} 
+                                    floatingLabelText="Usuario" 
+                                    id="username-field" 
+                                    value={this.state.username} 
+                                    onChange={this.handleUsernameChange} 
+                                    />
+                          <Divider />
+                          <TextField style={input_style} 
+                                      underlineShow={false} 
+                                      floatingLabelText="Contraseña" 
+                                      id="password-field" 
+                                      value={this.state.password} 
+                                      type="password" 
+                                      onChange={this.handlePasswordChange} 
+                                    />
+                      </Paper>
                     </CardText>
+                    <CardActions style={{"text-align": "right"}}>
+                      <RaisedButton label="Acceder" onTouchTap={this.handleSubmit} />,
+                    </CardActions>
                  </Card>
-                    <Dialog
-                      title="Login"
-                      actions={[
-                          <RaisedButton label="Acceder" onTouchTap={this.handleSubmit} />,
-                      ]}
-                      modal={false}
-                      open={this.state.show_login}
-                      onRequestClose={this.handleDialogClose}
-                    >
-                      <TextField style={input_style} 
-                                underlineShow={false} 
-                                floatingLabelText="Usuario" 
-                                id="username-field" 
-                                value={this.state.username} 
-                                onChange={this.handleUsernameChange} 
-                                />
-                      <Divider />
-                      <TextField style={input_style} 
-                                  underlineShow={false} 
-                                  floatingLabelText="Contraseña" 
-                                  id="password-field" 
-                                  value={this.state.password} 
-                                  type="password" 
-                                  onChange={this.handlePasswordChange} 
-                                />
-                    </Dialog>
             </div>
         )
     }

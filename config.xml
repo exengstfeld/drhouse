@@ -1,14 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.softwerkla" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>DrHouse</name>
+    <name>SW Prestadores</name>
     <description>
-        APP diseñada para internacion domiciliaria
+        Mobile APP diseñada para prestadores
     </description>
     <author email="" href="">
         Eric Engstfeld
     </author>
-    <icon src="www/img/logo.png" />
-    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <icon src="www/img/softwerk.png" />
     <access origin="*" />
     <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
@@ -24,4 +23,7 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    <engine name="android" spec="^6.2.3" />
+    <engine name="browser" spec="^4.1.0" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
 </widget>

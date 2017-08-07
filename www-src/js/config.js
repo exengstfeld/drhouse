@@ -15,12 +15,9 @@ var {
 
 
 module.exports = {
-    api_base_url: "http://localhost:5500/api/mobile",
-    // api_base_url: "http://192.168.1.174:5500/api/mobile",
-    // api_base_url: "http://192.168.1.102:5500/api/mobile",
+    //api_base_url: "http://localhost:5500/api/mobile",
+    api_base_url: "http://api.softwerkla.com/api/mobile",
 
-    
-    
     input_style: {
       marginLeft: 13
     },

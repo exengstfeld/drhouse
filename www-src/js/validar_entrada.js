@@ -1,12 +1,17 @@
 var React = require('react')
 var browserHistory = require('react-router').hashHistory
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
+var {Card, CardActions, CardTitle, CardHeader, CardText, CardMedia} = require('material-ui/Card')
 var locatePatient = require ('../js/utils').locatePatient 
 var RaisedButton = require('material-ui').RaisedButton
 var AppBar = require('material-ui').AppBar
 var IconButton = require('material-ui').IconButton
-var NavigationClose = require('material-ui/svg-icons/navigation/close').default
+var ArrowBackIcon = require('material-ui/svg-icons/navigation/arrow-back').default
+var PersonPin = require('material-ui/svg-icons/maps/person-pin').default
 
+var Paper = require('material-ui').Paper
+var TextField = require('material-ui').TextField
+var Divider = require('material-ui').Divider
 var get = require('../js/utils').get
 var post = require('../js/utils').post
 var {greenA200} = require('material-ui/styles/colors')
@@ -34,19 +39,6 @@ module.exports = class Patients extends React.Component {
     componentDidMount(){
         if (isNotLoggedIn()){
             browserHistory.push('/');
-        } else {
-            cordova.plugins.barcodeScanner.scan(
-                ((result) => this.setState({code: result.text})),
-                ((error) => this.setState({error: true, feedback: error})),
-                {
-                    "preferFrontCamera" : false, // iOS and Android
-                    "showFlipCameraButton" : true, // iOS and Android
-                    "prompt" : "Lleve el recuadro hacia el código QR del ticket electrónico", // supported on Android only
-                    "formats" : "QR_CODE", // default: all but PDF_417 and RSS_EXPANDED
-                    "orientation" : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
-                    "resultDisplayDuration": 0
-                }
-            );
         }
     }
 
@@ -66,17 +58,32 @@ module.exports = class Patients extends React.Component {
         return(
             <span>
                 <AppBar
-                    title={"Marcar entrada"}
-                    iconElementLeft={<IconButton onTouchTap={() => browserHistory.goBack()}><NavigationClose /></IconButton>}
+                    title={"Comenzar atención"}
+                    iconElementLeft={<IconButton onTouchTap={() => browserHistory.goBack()}><ArrowBackIcon /></IconButton>}
                 />
-                <div style={local_styles.div_principal}>
-                    <p><strong>Nombre: </strong> {this.state.paciente.BuscarComo} ({this.state.paciente.EDAD} año)</p>
-                    <p><strong>Especialidad: </strong>{this.state.paciente.DescProducto}</p>
-                    <p><strong>Cantidad: </strong>{this.state.paciente.Cantidad} {this.state.paciente.CodUnidadMedidaSalida}</p>
-                    <p><strong>Horario: </strong> Desde las {this.state.paciente.HoraDesde}hs hasta las {this.state.paciente.HoraHasta}hs.</p>
-                    <RaisedButton onTouchTap={this.marcar_entrada} label="Atender" />   
-                    <RaisedButton onTouchTap={() => browserHistory.goBack()} label="Volver" />
-                </div>
+                 <Card>
+                  <CardText>
+                      <p>Una vez comenzada la atención no podrá atender otro paciente hasta que esta finalice. Al finalizar podrá cargar las observaciones que considere de importancia para grabar en el historial.</p>
+                      <Paper style={{"padding": "10px"}}>
+                          <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Nombre" value={this.state.paciente.BuscarComo}  />
+                          <TextField underlineShow={false} style={{"width": "auto"}} inputStyle={{"width": "20px"}} floatingLabelText="Edad" value={this.state.paciente.EDAD}  />
+                          <Divider />
+                          <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Telefono" value={this.state.paciente.Telefono1}  />
+                          <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Domicilio" value={this.state.paciente.Domicilio}  />
+                          <Divider />
+                          <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Especialidad" value={this.state.paciente.DescProducto}  />
+                          <Divider />
+                          <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Cantidad" value={this.state.paciente.Cantidad}  />
+                          <TextField underlineShow={false} style={{"width": "100px"}} inputStyle={{"width": "20px"}} floatingLabelText="Medida" value={this.state.paciente.CodUnidadMedidaSalida}  />
+                          <Divider />
+                          <TextField underlineShow={false} style={{"width": "auto"}} floatingLabelText="Hora desde" value={this.state.paciente.HoraDesde}  />
+                          <TextField underlineShow={false} style={{"width": "100px"}} inputStyle={{"width": "20px"}} floatingLabelText="Hora hasta" value={this.state.paciente.HoraHasta}  />
+                       </Paper>  
+                  </CardText>
+                  <CardActions style={{"text-align":"center"}}>
+                    <RaisedButton onTouchTap={this.marcar_entrada} primary={true} icon={<PersonPin/>} fullWidth={true} label="Atender ahora" />   
+                  </CardActions>
+                 </Card> 
             </span>
        )
     }

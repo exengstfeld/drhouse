@@ -16,11 +16,13 @@ var Login = require('../js/login')
 var ScanTicket = require('../js/eticket')
 var Home = require('../js/home')
 var validar_entrada = require('../js/validar_entrada')
+var validar_salida = require('../js/validar_salida')
 var utiles = require('../js/datosutiles')
 var historial = require('../js/prestador_historial')
 var patients = require('../js/patients')
-var darkBaseTheme = require('../js/config').darkBaseTheme
-var lightBaseTheme = require('material-ui/styles/baseThemes/lightBaseTheme')
+//var darkBaseTheme = require('../js/config').darkBaseTheme
+//var lightBaseTheme = require('material-ui/styles/baseThemes/lightBaseTheme')
+var customTheme = require('../js/softwerkTheme')
 var closeActiveSession = require('../js/utils').closeActiveSession
 var isNotLoggedIn = require('../js/utils').isNotLoggedIn
 var app_bar_style = require('../js/config').app_bar_style 
@@ -78,7 +80,7 @@ class App extends React.Component {
     }
     render(){
         return(
-            <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+            <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
                 <div>
                     { !isNotLoggedIn() && (  
                         <Drawer
@@ -88,20 +90,14 @@ class App extends React.Component {
                         onRequestChange={(open) => this.setState({open})}
                         >
                         <Card>
-                            <CardMedia>
-                                <img src="img/softwerk.png" />
-                            </CardMedia>
                             <CardHeader
                                 title={sessionStorage.loggedIn}
-                                subtitle="Usuario logeado."
+                                subtitle={sessionStorage.loggedName}
                             />
                         </Card>
                         <Divider/>
-                        <MenuItem onTouchTap={this.goHome} primaryText="Listado del Dia" />
-                        <Divider/>
-                        <MenuItem onTouchTap={this.goPrestadorHistorial} primaryText="Prestaciones" />
-                        <Divider/>
-                        <MenuItem onTouchTap={this.goUtiles} primaryText="Datos útiles" />
+                        <MenuItem onTouchTap={this.goHome} primaryText="Bandeja de entrada" />
+                        <MenuItem onTouchTap={this.goPrestadorHistorial} primaryText="Prestaciones realizadas" />
                         <Divider/>
                         <MenuItem onTouchTap={this.signOut} primaryText="Cerrar Sesión" />
                         </Drawer>
@@ -125,6 +121,7 @@ ReactDOM.render((
              <Route path='historial' component={historial}/>
              <Route path='patients/:id' component={patients}/>
              <Route path='validar_entrada/:id' component={validar_entrada}/>
+             <Route path='validar_salida/:id' component={validar_salida}/>
           </Route>
       </Router>
 ), document.getElementById("root"))

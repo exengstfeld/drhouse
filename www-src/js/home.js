@@ -29,37 +29,22 @@ var lightBlue50_style = require('../js/config').lightBlue50_style
 
 
 function ShowCard(param){
-    if((param.busy != null) && 
-         (param.busy.IDPrestacionPrestador == param.v.IDPrestacionPrestador)){
-        var row =(
-            <ListItem style={lightBlue50_style}
-                leftAvatar={<Person/>}
-                primaryText={param.v.BuscarComo} 
-                secondaryText={
-                    <p>
-                        {param.v.DescProducto} ({param.v.HoraDesde} - {param.v.HoraHasta} hs)   
-                    </p>
-                }
-                secondaryTextLines={2}
-                href={"index.html#/patients/" + param.v.IDPrestacionPrestador}
-            />
-        )
-    }else{
-        var row =(
-            <ListItem
-                leftAvatar={<PermIdentity/>}
-                primaryText={param.v.BuscarComo} 
-                secondaryText={
-                    <p>
-                        {param.v.DescProducto} ({param.v.HoraDesde} - {param.v.HoraHasta} hs)   
-                    </p>
-                }
-                secondaryTextLines={2}
-                href={"index.html#/patients/" + param.v.IDPrestacionPrestador}
-            />
-        )
-    }
-    return row
+    return (
+        <ListItem
+            leftAvatar={
+                (param.busy != null) && 
+                    (param.busy.IDPrestacionPrestador == param.v.IDPrestacionPrestador) ? 
+                        <Person/> : <PermIdentity/> }
+            primaryText={param.v.BuscarComo} 
+            secondaryText={<span>
+                    {param.v.DescProducto} 
+                    <span className={"pull-right"}>{param.v.HoraDesde}hs - {param.v.HoraHasta}hs</span>
+                    </span>
+            }
+            secondaryTextLines={2}
+            href={"index.html#/patients/" + param.v.IDPrestacionPrestador}
+        />
+    )
 }
 
 
